@@ -32,6 +32,14 @@ For optimized release builds, use:
 cargo build --release
 ```
 
+## Testing
+
+To run all the rust tests for the crates, navigate to the `crates` direcory, build and run:
+
+```
+cargo test
+```
+
 ## Dependencies
 
 These crates use workspace-level dependencies. Refer to the root `Cargo.toml` file for the specific versions of dependencies used across the project.
