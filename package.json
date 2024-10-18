@@ -1,6 +1,7 @@
 {
   "name": "wen-program-library",
   "version": "0.5.0",
+  "private": true,
   "description": "A library of programs maintained by the WEN community",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
@@ -8,7 +9,8 @@
     "lint:rs": "sh -c 'find . -path ./target -prune -o -name \"*.rs\" -exec sh -c \"echo Formatting {} && cargo fmt -- {}\" \\;'",
     "clients": "node ./kinobi.mjs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:eclipse-testnet:rarible_marketplace": "anchor build -p rarible_marketplace && anchor deploy -p rarible_marketplace --provider.cluster https://testnet.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json"
   },
   "repository": {
     "type": "git",
@@ -22,8 +24,12 @@
     "@kinobi-so/renderers-core": "^0.20.6",
     "@kinobi-so/visitors": "^0.20.6",
     "@kinobi-so/visitors-core": "^0.20.6",
+    "@ledgerhq/hw-app-solana": "^7.2.4",
+    "@ledgerhq/hw-transport-node-hid": "^6.29.5",
     "@solana/spl-token": "^0.4.6",
-    "@solana/spl-token-metadata": "^0.1.4"
+    "@solana/spl-token-metadata": "^0.1.4",
+    "commander": "^12.1.0",
+    "lerna": "^8.1.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
@@ -42,5 +48,6 @@
     "solana-bankrun": "^0.3.0",
     "ts-mocha": "^10.0.0",
     "typescript": "^4.3.5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -770,6 +770,14 @@ export type Marketplace = {
           "writable": true
         },
         {
+          "name": "feeRecipient",
+          "writable": true
+        },
+        {
+          "name": "feeRecipientTa",
+          "writable": true
+        },
+        {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
@@ -921,7 +929,16 @@ export type Marketplace = {
           "name": "program"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "initMarketParams"
+            }
+          }
+        }
+      ]
     },
     {
       "name": "list",
@@ -1389,6 +1406,22 @@ export type Marketplace = {
       }
     },
     {
+      "name": "initMarketParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feeRecipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "feeBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "listData",
       "type": {
         "kind": "struct",
@@ -1442,6 +1475,20 @@ export type Marketplace = {
             "type": "u8"
           },
           {
+            "name": "feeRecipient",
+            "docs": [
+              "address that should receive market fees"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "feeBps",
+            "docs": [
+              "fee basis points"
+            ],
+            "type": "u64"
+          },
+          {
             "name": "reserve",
             "docs": [
               "reserved space for future changes"
@@ -1484,6 +1531,14 @@ export type Marketplace = {
           {
             "name": "state",
             "type": "u8"
+          },
+          {
+            "name": "feeRecipient",
+            "type": "string"
+          },
+          {
+            "name": "feeBps",
+            "type": "u64"
           }
         ]
       }

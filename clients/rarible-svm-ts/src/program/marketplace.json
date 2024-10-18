@@ -46,7 +46,7 @@
               {
                 "kind": "account",
                 "path": "market.market_identifier",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -82,7 +82,7 @@
           }
         },
         {
-          "name": "initializer_payment_ta",
+          "name": "initializerPaymentTa",
           "writable": true,
           "pda": {
             "seeds": [
@@ -92,11 +92,11 @@
               },
               {
                 "kind": "account",
-                "path": "payment_token_program"
+                "path": "paymentTokenProgram"
               },
               {
                 "kind": "account",
-                "path": "payment_mint"
+                "path": "paymentMint"
               }
             ],
             "program": {
@@ -139,7 +139,7 @@
           }
         },
         {
-          "name": "order_payment_ta",
+          "name": "orderPaymentTa",
           "writable": true,
           "pda": {
             "seeds": [
@@ -149,11 +149,11 @@
               },
               {
                 "kind": "account",
-                "path": "payment_token_program"
+                "path": "paymentTokenProgram"
               },
               {
                 "kind": "account",
-                "path": "payment_mint"
+                "path": "paymentMint"
               }
             ],
             "program": {
@@ -196,25 +196,25 @@
           }
         },
         {
-          "name": "payment_mint",
+          "name": "paymentMint",
           "writable": true
         },
         {
-          "name": "payment_token_program"
+          "name": "paymentTokenProgram"
         },
         {
-          "name": "nft_mint"
+          "name": "nftMint"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "event_authority",
+          "name": "eventAuthority",
           "pda": {
             "seeds": [
               {
@@ -251,14 +251,14 @@
           "name": "data",
           "type": {
             "defined": {
-              "name": "BidData"
+              "name": "bidData"
             }
           }
         }
       ]
     },
     {
-      "name": "cancel_bid",
+      "name": "cancelBid",
       "docs": [
         "cancel a buy order"
       ],
@@ -296,12 +296,12 @@
               {
                 "kind": "account",
                 "path": "order.nonce",
-                "account": "Order"
+                "account": "order"
               },
               {
                 "kind": "account",
                 "path": "order.market",
-                "account": "Order"
+                "account": "order"
               },
               {
                 "kind": "account",
@@ -328,13 +328,13 @@
               {
                 "kind": "account",
                 "path": "market.market_identifier",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
         },
         {
-          "name": "initializer_payment_ta",
+          "name": "initializerPaymentTa",
           "writable": true,
           "pda": {
             "seeds": [
@@ -344,11 +344,11 @@
               },
               {
                 "kind": "account",
-                "path": "payment_token_program"
+                "path": "paymentTokenProgram"
               },
               {
                 "kind": "account",
-                "path": "payment_mint"
+                "path": "paymentMint"
               }
             ],
             "program": {
@@ -391,7 +391,7 @@
           }
         },
         {
-          "name": "order_payment_ta",
+          "name": "orderPaymentTa",
           "writable": true,
           "pda": {
             "seeds": [
@@ -401,11 +401,11 @@
               },
               {
                 "kind": "account",
-                "path": "payment_token_program"
+                "path": "paymentTokenProgram"
               },
               {
                 "kind": "account",
-                "path": "payment_mint"
+                "path": "paymentMint"
               }
             ],
             "program": {
@@ -448,22 +448,22 @@
           }
         },
         {
-          "name": "payment_mint",
+          "name": "paymentMint",
           "writable": true
         },
         {
-          "name": "payment_token_program"
+          "name": "paymentTokenProgram"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "event_authority",
+          "name": "eventAuthority",
           "pda": {
             "seeds": [
               {
@@ -498,7 +498,7 @@
       "args": []
     },
     {
-      "name": "cancel_listing",
+      "name": "cancelListing",
       "docs": [
         "cancel a sell order"
       ],
@@ -536,12 +536,12 @@
               {
                 "kind": "account",
                 "path": "order.nonce",
-                "account": "Order"
+                "account": "order"
               },
               {
                 "kind": "account",
                 "path": "order.market",
-                "account": "Order"
+                "account": "order"
               },
               {
                 "kind": "account",
@@ -568,43 +568,43 @@
               {
                 "kind": "account",
                 "path": "market.market_identifier",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
         },
         {
-          "name": "nft_mint",
+          "name": "nftMint",
           "writable": true
         },
         {
-          "name": "initializer_nft_ta",
+          "name": "initializerNftTa",
           "writable": true
         },
         {
-          "name": "order_nft_ta",
+          "name": "orderNftTa",
           "writable": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "sysvar_instructions",
+          "name": "sysvarInstructions",
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "nft_token_program"
+          "name": "nftTokenProgram"
         },
         {
-          "name": "nft_program"
+          "name": "nftProgram"
         },
         {
-          "name": "event_authority",
+          "name": "eventAuthority",
           "pda": {
             "seeds": [
               {
@@ -639,7 +639,7 @@
       "args": []
     },
     {
-      "name": "fill_order",
+      "name": "fillOrder",
       "docs": [
         "fill a listing"
       ],
@@ -681,7 +681,7 @@
               {
                 "kind": "account",
                 "path": "market.market_identifier",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -704,23 +704,23 @@
               {
                 "kind": "account",
                 "path": "order.nonce",
-                "account": "Order"
+                "account": "order"
               },
               {
                 "kind": "account",
                 "path": "order.market",
-                "account": "Order"
+                "account": "order"
               },
               {
                 "kind": "account",
                 "path": "order.owner",
-                "account": "Order"
+                "account": "order"
               }
             ]
           }
         },
         {
-          "name": "nft_mint",
+          "name": "nftMint",
           "writable": true
         },
         {
@@ -746,7 +746,7 @@
               },
               {
                 "kind": "account",
-                "path": "nft_mint"
+                "path": "nftMint"
               },
               {
                 "kind": "account",
@@ -756,48 +756,56 @@
           }
         },
         {
-          "name": "seller_nft_ta",
+          "name": "sellerNftTa",
           "writable": true
         },
         {
-          "name": "buyer_nft_ta",
+          "name": "buyerNftTa",
           "writable": true
         },
         {
-          "name": "system_program",
+          "name": "feeRecipient",
+          "writable": true
+        },
+        {
+          "name": "feeRecipientTa",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "nft_token_program"
+          "name": "nftTokenProgram"
         },
         {
-          "name": "nft_program"
+          "name": "nftProgram"
         },
         {
-          "name": "seller_payment_ta",
+          "name": "sellerPaymentTa",
           "writable": true
         },
         {
-          "name": "buyer_payment_ta",
+          "name": "buyerPaymentTa",
           "writable": true
         },
         {
-          "name": "payment_mint",
+          "name": "paymentMint",
           "writable": true
         },
         {
-          "name": "payment_token_program"
+          "name": "paymentTokenProgram"
         },
         {
-          "name": "sysvar_instructions",
+          "name": "sysvarInstructions",
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "event_authority",
+          "name": "eventAuthority",
           "pda": {
             "seeds": [
               {
@@ -832,7 +840,7 @@
       "args": []
     },
     {
-      "name": "init_market",
+      "name": "initMarket",
       "docs": [
         "initializer a new market"
       ],
@@ -853,7 +861,7 @@
           "signer": true
         },
         {
-          "name": "market_identifier"
+          "name": "marketIdentifier"
         },
         {
           "name": "market",
@@ -873,17 +881,17 @@
               },
               {
                 "kind": "account",
-                "path": "market_identifier"
+                "path": "marketIdentifier"
               }
             ]
           }
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority",
+          "name": "eventAuthority",
           "pda": {
             "seeds": [
               {
@@ -915,7 +923,16 @@
           "name": "program"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "initMarketParams"
+            }
+          }
+        }
+      ]
     },
     {
       "name": "list",
@@ -956,7 +973,7 @@
               {
                 "kind": "account",
                 "path": "market.market_identifier",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -1014,7 +1031,7 @@
               },
               {
                 "kind": "account",
-                "path": "nft_mint"
+                "path": "nftMint"
               },
               {
                 "kind": "account",
@@ -1024,10 +1041,10 @@
           }
         },
         {
-          "name": "nft_mint"
+          "name": "nftMint"
         },
         {
-          "name": "initializer_nft_ta",
+          "name": "initializerNftTa",
           "writable": true,
           "pda": {
             "seeds": [
@@ -1037,11 +1054,11 @@
               },
               {
                 "kind": "account",
-                "path": "nft_token_program"
+                "path": "nftTokenProgram"
               },
               {
                 "kind": "account",
-                "path": "nft_mint"
+                "path": "nftMint"
               }
             ],
             "program": {
@@ -1084,7 +1101,7 @@
           }
         },
         {
-          "name": "order_nft_ta",
+          "name": "orderNftTa",
           "writable": true,
           "pda": {
             "seeds": [
@@ -1094,11 +1111,11 @@
               },
               {
                 "kind": "account",
-                "path": "nft_token_program"
+                "path": "nftTokenProgram"
               },
               {
                 "kind": "account",
-                "path": "nft_mint"
+                "path": "nftMint"
               }
             ],
             "program": {
@@ -1141,25 +1158,25 @@
           }
         },
         {
-          "name": "sysvar_instructions",
+          "name": "sysvarInstructions",
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "nft_token_program"
+          "name": "nftTokenProgram"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "nft_program"
+          "name": "nftProgram"
         },
         {
-          "name": "event_authority",
+          "name": "eventAuthority",
           "pda": {
             "seeds": [
               {
@@ -1196,14 +1213,14 @@
           "name": "data",
           "type": {
             "defined": {
-              "name": "ListData"
+              "name": "listData"
             }
           }
         }
       ]
     },
     {
-      "name": "verify_mint",
+      "name": "verifyMint",
       "docs": [
         "initializer a new market"
       ],
@@ -1227,7 +1244,7 @@
           "name": "market"
         },
         {
-          "name": "nft_mint"
+          "name": "nftMint"
         },
         {
           "name": "verification",
@@ -1253,7 +1270,7 @@
               },
               {
                 "kind": "account",
-                "path": "nft_mint"
+                "path": "nftMint"
               },
               {
                 "kind": "account",
@@ -1263,7 +1280,7 @@
           }
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1272,7 +1289,7 @@
   ],
   "accounts": [
     {
-      "name": "Market",
+      "name": "market",
       "discriminator": [
         219,
         190,
@@ -1285,7 +1302,7 @@
       ]
     },
     {
-      "name": "MintVerification",
+      "name": "mintVerification",
       "discriminator": [
         152,
         183,
@@ -1298,7 +1315,7 @@
       ]
     },
     {
-      "name": "Order",
+      "name": "order",
       "discriminator": [
         134,
         173,
@@ -1313,7 +1330,7 @@
   ],
   "events": [
     {
-      "name": "MarketEditEvent",
+      "name": "marketEditEvent",
       "discriminator": [
         160,
         230,
@@ -1326,7 +1343,7 @@
       ]
     },
     {
-      "name": "OrderEditEvent",
+      "name": "orderEditEvent",
       "discriminator": [
         155,
         223,
@@ -1342,28 +1359,28 @@
   "errors": [
     {
       "code": 6000,
-      "name": "WrongAccount",
+      "name": "wrongAccount",
       "msg": "Account passed in incorrectly"
     },
     {
       "code": 6001,
-      "name": "AmountOverflow",
+      "name": "amountOverflow",
       "msg": "Amount overflow"
     },
     {
       "code": 6002,
-      "name": "AmountUnderflow",
+      "name": "amountUnderflow",
       "msg": "Amount underflow"
     },
     {
       "code": 6003,
-      "name": "UnsupportedNft",
+      "name": "unsupportedNft",
       "msg": "Unsupported NFT Type"
     }
   ],
   "types": [
     {
-      "name": "BidData",
+      "name": "bidData",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1383,7 +1400,23 @@
       }
     },
     {
-      "name": "ListData",
+      "name": "initMarketParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feeRecipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "feeBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "listData",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1392,7 +1425,7 @@
             "type": "pubkey"
           },
           {
-            "name": "payment_mint",
+            "name": "paymentMint",
             "type": "pubkey"
           },
           {
@@ -1403,7 +1436,7 @@
       }
     },
     {
-      "name": "Market",
+      "name": "market",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1415,7 +1448,7 @@
             "type": "u8"
           },
           {
-            "name": "market_identifier",
+            "name": "marketIdentifier",
             "docs": [
               "identifying of the index to which the NFTs belong to (WNS Collection, Metaplex collection, separate hash)"
             ],
@@ -1436,6 +1469,20 @@
             "type": "u8"
           },
           {
+            "name": "feeRecipient",
+            "docs": [
+              "address that should receive market fees"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "feeBps",
+            "docs": [
+              "fee basis points"
+            ],
+            "type": "u64"
+          },
+          {
             "name": "reserve",
             "docs": [
               "reserved space for future changes"
@@ -1451,12 +1498,12 @@
       }
     },
     {
-      "name": "MarketEditEvent",
+      "name": "marketEditEvent",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "edit_type",
+            "name": "editType",
             "type": "u8"
           },
           {
@@ -1468,7 +1515,7 @@
             "type": "u8"
           },
           {
-            "name": "market_identifier",
+            "name": "marketIdentifier",
             "type": "string"
           },
           {
@@ -1478,12 +1525,20 @@
           {
             "name": "state",
             "type": "u8"
+          },
+          {
+            "name": "feeRecipient",
+            "type": "string"
+          },
+          {
+            "name": "feeBps",
+            "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "MintVerification",
+      "name": "mintVerification",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1495,7 +1550,7 @@
       }
     },
     {
-      "name": "Order",
+      "name": "order",
       "docs": [
         "order account - each listing has one order account"
       ],
@@ -1560,42 +1615,42 @@
             "type": "u8"
           },
           {
-            "name": "init_time",
+            "name": "initTime",
             "docs": [
               "order account creation time"
             ],
             "type": "i64"
           },
           {
-            "name": "last_edit_time",
+            "name": "lastEditTime",
             "docs": [
               "last time the order was edited"
             ],
             "type": "i64"
           },
           {
-            "name": "nft_mint",
+            "name": "nftMint",
             "docs": [
               "nft mint in case order is a sell order"
             ],
             "type": "pubkey"
           },
           {
-            "name": "payment_mint",
+            "name": "paymentMint",
             "docs": [
               "mint for the payment, default pubkey if SOL"
             ],
             "type": "pubkey"
           },
           {
-            "name": "fees_on",
+            "name": "feesOn",
             "docs": [
               "fees on for this order"
             ],
             "type": "bool"
           },
           {
-            "name": "reserve_0",
+            "name": "reserve0",
             "docs": [
               "reserved space for future changes split up due to serialization constraints"
             ],
@@ -1607,7 +1662,7 @@
             }
           },
           {
-            "name": "reserve_1",
+            "name": "reserve1",
             "docs": [
               "reserved space for future changes"
             ],
@@ -1619,7 +1674,7 @@
             }
           },
           {
-            "name": "reserve_2",
+            "name": "reserve2",
             "docs": [
               "reserved space for future changes"
             ],
@@ -1631,7 +1686,7 @@
             }
           },
           {
-            "name": "reserve_3",
+            "name": "reserve3",
             "docs": [
               "reserved space for future changes"
             ],
@@ -1643,7 +1698,7 @@
             }
           },
           {
-            "name": "reserve_4",
+            "name": "reserve4",
             "docs": [
               "reserved space for future changes"
             ],
@@ -1655,7 +1710,7 @@
             }
           },
           {
-            "name": "reserve_5",
+            "name": "reserve5",
             "docs": [
               "reserved space for future changes"
             ],
@@ -1670,12 +1725,12 @@
       }
     },
     {
-      "name": "OrderEditEvent",
+      "name": "orderEditEvent",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "edit_type",
+            "name": "editType",
             "type": "u8"
           },
           {
@@ -1715,23 +1770,23 @@
             "type": "u8"
           },
           {
-            "name": "init_time",
+            "name": "initTime",
             "type": "i64"
           },
           {
-            "name": "last_edit_time",
+            "name": "lastEditTime",
             "type": "i64"
           },
           {
-            "name": "nft_mint",
+            "name": "nftMint",
             "type": "string"
           },
           {
-            "name": "payment_mint",
+            "name": "paymentMint",
             "type": "string"
           },
           {
-            "name": "market_identifier",
+            "name": "marketIdentifier",
             "type": "string"
           }
         ]

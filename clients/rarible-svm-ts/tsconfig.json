@@ -17,6 +17,6 @@
         "skipLibCheck": true,
         "noFallthroughCasesInSwitch": true,
         "allowSyntheticDefaultImports": true,
-        "strictNullChecks": true
+        "strictNullChecks": false
     }
 }
