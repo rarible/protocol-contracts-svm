@@ -43,7 +43,3 @@ cargo test
 ## Dependencies
 
 These crates use workspace-level dependencies. Refer to the root `Cargo.toml` file for the specific versions of dependencies used across the project.
-
-## Note
-
-These crates are separate from the main Anchor programs and use different Solana and Anchor versions. They are designed to work with Solana 1.16 and Anchor 0.28, while the main programs use more recent versions. 

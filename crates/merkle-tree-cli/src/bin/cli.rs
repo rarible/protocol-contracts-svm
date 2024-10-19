@@ -2,9 +2,7 @@ extern crate merkle_tree;
 
 use std::path::PathBuf;
 use clap::{Parser, Subcommand};
-use merkle_tree::{
-    phase_merkle_tree::PhaseMerkleTree,
-};
+use merkle_tree::phase_merkle_tree::PhaseMerkleTree;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
