@@ -8,6 +8,7 @@ import {
   getMarketPda,
   getMarketplaceProgram,
   getEventAuthority,
+  marketplaceProgramId,
 } from "../../clients/rarible-svm-ts/src";
 import { IExecutorParams } from "../utils/IExecutorParams";
 import { AnchorProvider } from "@coral-xyz/anchor";
@@ -62,7 +63,7 @@ export const initMarket = async ({
         market: marketPda,
         systemProgram: SystemProgram.programId,
         eventAuthority: eventAuthority,
-        program: marketIdentifier,
+        program: marketplaceProgramId,
       })
       .instruction()
   );

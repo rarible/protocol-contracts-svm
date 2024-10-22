@@ -11,11 +11,13 @@ import {
     getOrderAccount,
     getVerificationPda,
     getEventAuthority,
+    marketplaceProgramId,
+    getAtaAddress,
   } from "../../clients/rarible-svm-ts/src"; // Adjust the import path accordingly
   import { IExecutorParams } from "../utils/IExecutorParams";
   import { AnchorProvider, BN } from "@coral-xyz/anchor";
   import { sendSignedTransaction } from "../utils/txUtils";
-  import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+  import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
   
   export interface IListNft {
     nonce: PublicKey;
@@ -49,7 +51,7 @@ import {
   
     // Derive PDAs for order and verification accounts
     const orderPda = getOrderAccount(nonce.toBase58(), marketPda.toBase58(), wallet.publicKey);
-    const verificationPda = getVerificationPda(nftMint.toBase58(), marketPda.toBase58());
+    const verificationPda = getVerificationPda(marketPda.toBase58(), nftMint.toBase58());
   
     // Log the derived PDAs
     console.log(`Derived Market PDA: ${marketPda.toBase58()}`);
@@ -59,24 +61,9 @@ import {
     const instructions: TransactionInstruction[] = [];
   
     // Define the accounts required for the instruction
-    const initializerNftAta = await PublicKey.findProgramAddress(
-      [
-        wallet.publicKey.toBuffer(),
-        TOKEN_PROGRAM_ID.toBuffer(),
-        nftMint.toBuffer(),
-      ],
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    );
   
-    const orderNftAta = await PublicKey.findProgramAddress(
-      [
-        orderPda.toBuffer(),
-        TOKEN_PROGRAM_ID.toBuffer(),
-        nftMint.toBuffer(),
-      ],
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-  
+    const initializerNftTa = getAtaAddress(nftMint.toBase58(), wallet.publicKey, TOKEN_2022_PROGRAM_ID.toString());
+    const orderNftTa = getAtaAddress(nftMint.toString(), orderPda.toString(), TOKEN_2022_PROGRAM_ID.toString());
     // Event authority (if required)
     const eventAuthority = getEventAuthority();
   
@@ -98,15 +85,15 @@ import {
             order: orderPda,
             verification: verificationPda,
             nftMint: nftMint,
-            initializerNftTa: initializerNftAta[0],
-            orderNftTa: orderNftAta[0],
+            initializerNftTa: initializerNftTa,
+            orderNftTa: orderNftTa,
             sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
             systemProgram: SystemProgram.programId,
-            nftTokenProgram: TOKEN_PROGRAM_ID,
+            nftTokenProgram: TOKEN_2022_PROGRAM_ID,
             associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             nftProgram: nftMint, // Adjust if necessary
             eventAuthority: eventAuthority,
-            program: marketIdentifier
+            program: marketplaceProgramId
         })
         .remainingAccounts(remainingAccounts)
         .instruction()
