@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",
+    "@filebase/sdk": "^1.0.6",
     "@kinobi-so/nodes": "^0.20.6",
     "@kinobi-so/nodes-from-anchor": "^0.20.8",
     "@kinobi-so/renderers": "^0.20.14",
@@ -23,7 +24,9 @@
     "@kinobi-so/visitors": "^0.20.6",
     "@kinobi-so/visitors-core": "^0.20.6",
     "@solana/spl-token": "^0.4.6",
-    "@solana/spl-token-metadata": "^0.1.4"
+    "@solana/spl-token-metadata": "^0.1.4",
+    "dotenv": "^16.4.5",
+    "recursive-fs": "^2.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
