@@ -27,31 +27,11 @@ anchor-lang = { version = "0.30.1", features = [
   "event-cpi"
 ] }
 anchor-spl = { version = "0.30.1", features = ["token_2022_extensions", "token_2022"] }
-wen_new_standard = { git = "https://github.com/wen-community/wen-new-standard", branch="no_kinobi", features = ["cpi"] }
-wen_royalty_distribution =  { git = "https://github.com/wen-community/wen-new-standard", features = ["cpi"] }
+wen_new_standard = { git = "https://github.com/ifelsedeveloper/wen-program-library", branch="main", features = ["cpi"] }
+wen_royalty_distribution =  { git = "https://github.com/ifelsedeveloper/wen-program-library", features = ["cpi"] }
 mpl-token-metadata =  { version = "4.1.2", features = ["serde"] }
 mpl-bubblegum = { version = "1.4.0" }
 num_enum = "0.5.11"
-spl-transfer-hook-interface = "0.6.3"
-spl-tlv-account-resolution = "0.4.0"
+spl-transfer-hook-interface = "0.6.5"
+spl-tlv-account-resolution = "0.6.5"
 spl-pod = "0.2.2"
-
-solana-program = "1.18.17"
-solana-sdk = "1.18.17"
-
-csv = "1.3.0"
-fast-math = "0.1"
-indexmap = "2.1.0"
-serde = "1.0.137"
-serde_json = "1.0.102"
-hex = "0.4.3"
-rand = "0.8.5"
-thiserror = "1.0.50"
-clap = { version = "3.2.25", features = ["derive", "env"] }
-
-merkle-tree = { version="*", path = "../../crates/merkle-tree" }
-merkle-tree-cli = { version="*", path = "../../crates/merkle-tree-cli" }
-merkle-tree-verify = { version="*", path = "../../crates/merkle-tree-verify" }
-
-[patch.crates-io]
-spl-transfer-hook-interface = { version = "=0.6.3" }
