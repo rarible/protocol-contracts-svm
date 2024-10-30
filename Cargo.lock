@@ -3382,6 +3382,7 @@ dependencies = [
  "num_enum 0.5.11",
  "spl-pod 0.2.5",
  "spl-tlv-account-resolution 0.6.5",
+ "spl-token-group-interface 0.2.5",
  "spl-transfer-hook-interface 0.6.5",
  "wen_new_standard",
  "wen_royalty_distribution 0.2.0-alpha (git+https://github.com/ifelsedeveloper/wen-program-library)",

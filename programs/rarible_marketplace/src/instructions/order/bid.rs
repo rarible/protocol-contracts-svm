@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked}};
 
+
 use crate::state::*;
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
@@ -80,8 +81,8 @@ pub fn handler(ctx: Context<BidNft>, data: BidData) -> Result<()> {
 
     let clock = Clock::get()?;
     let bid_value = data.size.checked_mul(data.price).unwrap();
+
     // Transfer bid funds TODO;
-    
     ctx.accounts.transfer_payment(bid_value)?;
     // create a new order with size 1
     Order::init(

@@ -132,8 +132,9 @@ export const getRemainingAccountsForMint = async (provider: Provider, mint: stri
 		const extraMetaPda = getExtraMetasAccountPda(mint);
 		const approveAccount = getApproveAccountPda(mint);
 		const distributionAccount = getDistributionAccountPda(wnsParams.groupMint, wnsParams.paymentMint);
-
+		// const managerAccount = getManagerAccountPda();
 		const paymentTokenProgram = await getTokenProgramFromMint(provider, wnsParams.paymentMint);
+		const groupMemberAccount = getGroupMemberAccount(mint);
 		const distributionTokenAccount = paymentTokenProgram && getAtaAddress(wnsParams.paymentMint, distributionAccount.toString(), paymentTokenProgram.toString());
 
 		remainingAccounts.push(...[
@@ -154,6 +155,11 @@ export const getRemainingAccountsForMint = async (provider: Provider, mint: stri
 			},
 			{
 				pubkey: wnsDistributionProgramId,
+				isWritable: false,
+				isSigner: false,
+			},
+			{
+				pubkey: groupMemberAccount,
 				isWritable: false,
 				isSigner: false,
 			},
@@ -250,3 +256,8 @@ export const getDistributionAccountPda = (groupMint: string, paymentMint: string
 	return distributionAccount;
 };
 
+export const getGroupMemberAccount = (nftMint: string) => {
+	const [groupMemberAccount] = PublicKey.findProgramAddressSync([utils.bytes.utf8.encode('member'), new PublicKey(nftMint).toBuffer()], wnsProgramId);
+
+	return groupMemberAccount;
+};

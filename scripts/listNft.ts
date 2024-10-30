@@ -1,43 +1,47 @@
 import { Keypair, MessageV0, PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
-import { BidArgs, getCancelBid, fetchOrdersByMarket, fetchOrdersByMint, fetchOrdersByUser, fillOrder, getBid, getCancelListing, getComputeBudgetInstructions, getInitializeMarket, getListNft, getMarketPda, getOrderAccount, getProvider, getVerifyMint, ListArgs } from "../clients/rarible-svm-ts/src";
+import { CreateOrderArgs, getCancelBid, fetchOrdersByMarket, fetchOrdersByMint, fetchOrdersByUser, fillOrder, getBid, getCancelListing, getComputeBudgetInstructions, getInitializeMarket, getListNft, getMarketPda, getOrderAccount, getProvider, getVerifyMint } from "../clients/rarible-svm-ts/src";
 
 const demoMarket = {
-    marketIdentifier: new PublicKey("93zMBLNjEVpnT1jk9CHMscM7wbT7rE2ydvCxd3XGM1Vy"),
-    wnsGroup: "EXJB8YFiBpFeBbjq9PZhCsav2RfcZVeuBvT9t3jBuY5f",
+    marketIdentifier: new PublicKey("5hHaru7wRzFzHs9Fm7DK2vCXEC6v8zN9xutXYLHpEqG"),
+    wnsGroupMint: "EXJB8YFiBpFeBbjq9PZhCsav2RfcZVeuBvT9t3jBuY5f",
     paymentMint: "GRhhJGyjkHYcVmvKTb8okbPZD6HMYZrAcWpyN4R3bK5n",
+    feeRecipient: "yaoYaopKcDsMxnjbT1jBdvYz6XRmjPdAPHczsCraERc",
+    feeBps: 250
 };
 
 const mintsToVerify = ["4swpX19vkSyd2TLM2W2FcsHorkvh25aEg4b35H4Vf2Wv", "71xkPoBLf5DRmCkPJo9czuNL3docUuweeDARABcNsaVy", "CchC7gtAUL1bDbuomRkjupySAZcMAygRb983r3qnkXFv"];
 
 const listingData = [{
-        nftMint: "4swpX19vkSyd2TLM2W2FcsHorkvh25aEg4b35H4Vf2Wv",
-        price: 150000,
+        nftMint: "CchC7gtAUL1bDbuomRkjupySAZcMAygRb983r3qnkXFv",
+        price: 15000,
+        size: 1,
     },
     {
-        nftMint: "71xkPoBLf5DRmCkPJo9czuNL3docUuweeDARABcNsaVy",
-        price: 240000,
+        nftMint: "2RdFkcThfSX4ymoYEuzLLPCgTY6Dd4KMj3Mq8PnpeTWZ",
+        price: 24000,
+        size: 1,
     }
 ];
 
 const biddingData = [
     {
-    price: 75000,
+    price: 7500,
     size: 2,
     nftMint: undefined,
 },
 {
-    price: 150000,
-    size: 2,
+    price: 10000,
+    size: 1,
     nftMint: undefined,
 }
 ];
 
-const nftToSell = "4swpX19vkSyd2TLM2W2FcsHorkvh25aEg4b35H4Vf2Wv";
+const nftToSell = "42fqoiapjAMdqhF2i9PHR8Lk8UeJ9UU9yYn52uDtg6CT";
 
 async function setupMarket() {
     const provider = getProvider();
-    const { marketIdentifier } = demoMarket;
-    const createMarketIx = await getInitializeMarket(provider, marketIdentifier.toString());
+    const { marketIdentifier, feeBps, feeRecipient } = demoMarket;
+    const createMarketIx = await getInitializeMarket(provider, { marketIdentifier: marketIdentifier.toString(), feeBps, feeRecipient: feeRecipient });
     const recentBlockhash = (await provider.connection.getLatestBlockhash()).blockhash;
     const message = MessageV0.compile({ payerKey: provider.publicKey, instructions: [createMarketIx], recentBlockhash, })
     const tx = new VersionedTransaction(message);
@@ -76,17 +80,18 @@ async function verifyMints() {
 
 async function listNfts() {
     const provider = getProvider();
-    const { marketIdentifier, paymentMint, wnsGroup } = demoMarket;
+    const { marketIdentifier, paymentMint, wnsGroupMint } = demoMarket;
 
     const wnsParams = {
-        groupMint: wnsGroup,
+        groupMint: wnsGroupMint,
         paymentMint
     };
-    const listings: ListArgs[] = listingData.map((m) => { return {
+    const listings: CreateOrderArgs[] = listingData.map((m) => { return {
         marketIdentifier: marketIdentifier.toString(),
         nftMint: m.nftMint,
         paymentMint,
         price: m.price,
+        size: 1,
         extraAccountParams: wnsParams,
     }})
     
@@ -112,13 +117,14 @@ async function bid() {
     const provider = getProvider();
     const { marketIdentifier, paymentMint } = demoMarket;
 
-    const bids: BidArgs[] = biddingData.map(b => {
+    const bids: CreateOrderArgs[] = biddingData.map(b => {
         return {
             marketIdentifier: marketIdentifier.toString(),
             paymentMint,
             price: b.price,
             size: b.size,
             nftMint: b.nftMint,
+            extraAccountParams: undefined,
         }
     });
 
@@ -141,20 +147,21 @@ async function bid() {
 
 async function sellNft() {
     const provider = getProvider();
-    const { marketIdentifier, paymentMint, wnsGroup } = demoMarket;
+    const { marketIdentifier, paymentMint, wnsGroupMint } = demoMarket;
 
     const marketAddress = getMarketPda(marketIdentifier.toString());
 
     const wnsParams = {
-        groupMint: wnsGroup,
+        groupMint: wnsGroupMint,
         paymentMint
     };
 
     const activeOrders = (await fetchOrdersByMarket(provider, marketAddress.toString())).filter((o) => o.account.state == 0).filter(o => o !== undefined);
-    const topBid = activeOrders.filter(o => o.account.side == 0).sort((a, b) => b.account.price.toNumber() - a.account.price.toNumber()).pop();
+    const topBid = activeOrders.filter(o => o.account.side == 0 && o.publicKey.toString() !== "U8b7wU4hbUGFkUXioFzdfLz9YDFzDdD7VPrCV3VGcEq").sort((a, b) => a.account.price.toNumber() - b.account.price.toNumber()).pop();
 
+    // console.log(topBid.account.price.toNumber());
     if (topBid !== undefined) {
-        const buyNftIx = await fillOrder(provider, topBid.publicKey.toString(), nftToSell, wnsParams);
+        const buyNftIx = await fillOrder(provider, topBid.publicKey.toString(), 1, nftToSell, wnsParams);
         
         const computeIxs = getComputeBudgetInstructions({ computeUnits: 500_000 });
         const recentBlockhash = (await provider.connection.getLatestBlockhash()).blockhash;
@@ -169,7 +176,6 @@ async function sellNft() {
             console.log(e);
         }
     }
-
 }
 
 async function buyNft() {
@@ -178,17 +184,20 @@ async function buyNft() {
 
     const marketAddress = getMarketPda(marketIdentifier.toString());
 
-    const {paymentMint, wnsGroup} = demoMarket;
+    const {paymentMint, wnsGroupMint} = demoMarket;
     const wnsParams = {
-        groupMint: wnsGroup,
+        groupMint: wnsGroupMint,
         paymentMint
     };
    
-    const activeOrders = (await fetchOrdersByMarket(provider, marketAddress.toString())).filter((o) => o.account.state == 0).filter(o => o !== undefined);
-    const floorNft = activeOrders.filter(o => o.account.side == 1).sort((a, b) => a.account.price.toNumber() - b.account.price.toNumber()).pop();
-
+    const activeOrders = (await fetchOrdersByMarket(provider, marketAddress.toString())).filter((o) => o.account.state == 0).filter(o => o !== undefined).sort((a, b) => b.account.price.toNumber() - a.account.price.toNumber());
+    for (let i = 0; i < activeOrders.length; i++) {
+        console.log(activeOrders[i].account.price.toNumber(), activeOrders[i].account.nftMint.toString())
+    }
+    const floorNft = activeOrders.filter(o => o.account.side == 1).pop();
+    console.log(floorNft.account.price.toNumber(), floorNft.account.nftMint.toString())
     if (floorNft !== undefined) {
-        const buyNftIx = await fillOrder(provider, floorNft.publicKey.toString(), floorNft.account.nftMint.toString(), wnsParams);
+        const buyNftIx = await fillOrder(provider, floorNft.publicKey.toString(), 1, floorNft.account.nftMint.toString(), wnsParams);
         
         const computeIxs = getComputeBudgetInstructions({ computeUnits: 500_000 });
         const recentBlockhash = (await provider.connection.getLatestBlockhash()).blockhash;
@@ -205,19 +214,20 @@ async function buyNft() {
     }
 }
 
-
 async function cancelListings() {
     const provider = getProvider();
-    const { paymentMint, wnsGroup } = demoMarket;
+    const { paymentMint, wnsGroupMint } = demoMarket;
 
     const wnsParams = {
-        groupMint: wnsGroup,
+        groupMint: wnsGroupMint,
         paymentMint
     };
    
-    const bidsForUser = (await fetchOrdersByUser(provider, provider.publicKey.toString())).filter(o => o.account.state == 0).filter(o => o.account.side == 1);
+    // 0 = buy
+    // 1 = sell
+    const ordersForUser = (await fetchOrdersByUser(provider, provider.publicKey.toString())).filter(o => o.account.state == 0).filter(o => o.account.side == 1);
 
-    const cancelListingsIxs = await Promise.all(bidsForUser.map(o => getCancelListing(provider, o.publicKey, wnsParams)));
+    const cancelListingsIxs = await Promise.all(ordersForUser.map(o => getCancelListing(provider, o.publicKey, wnsParams)));
 
     for (let i = 0; i < cancelListingsIxs.length; i++) {
         const computeIxs = getComputeBudgetInstructions({ computeUnits: 300_000 });
@@ -230,7 +240,7 @@ async function cancelListings() {
             const txSig = await provider.connection.sendTransaction(signedTx);
             console.log("Cancel Listing --", txSig);
         } catch (e) {
-            console.log(e);
+            console.log("Cancel Listing Failed for --", ordersForUser[i].publicKey.toString());
         }
     }
 }
@@ -258,11 +268,11 @@ async function cancelBids() {
     }
 }
 
-setupMarket();
+// setupMarket();
 // verifyMints();
 // listNfts();
 // bid();
-// sellNfts();
-// buyNfts();
+// sellNft();
+// buyNft();
 // cancelListings();
 // cancelBids();
