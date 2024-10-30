@@ -1,11 +1,11 @@
 {
-  "name": "@rarible_int/rarible-editions-controls",
+  "name": "@rarible_int/protocol-contracts-svm-core",
   "version": "0.1.0",
   "keywords": [
     "rarible",
-    "editions controls",
+    "editions",
     "eclipse",
-    "test"
+    "idl"
   ],
   "repository": {
     "type": "git",
@@ -25,10 +25,9 @@
   "scripts": {
     "clean": "npx shx mkdir -p lib && npx shx rm -rf lib",
     "package": "npx shx mkdir  -p lib/cjs lib/esm lib/types",
-    "build": "rm -rf ./build && tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json"
+    "build": "rm -rf ./build && tsc -b ./tsconfig.build.json"
   },
-  "dependencies": {
-    "@rarible_int/rarible-idl": "0.1.0"
+  "peerDependencies": {
   },
   "publishConfig": {
     "registry": "http://nexus.rarible.int/repository/npm/"
