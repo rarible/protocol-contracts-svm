@@ -8,7 +8,17 @@
     "lint:rs": "sh -c 'find . -path ./target -prune -o -name \"*.rs\" -exec sh -c \"echo Formatting {} && cargo fmt -- {}\" \\;'",
     "clients": "node ./kinobi.mjs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "prepare": "husky"
+    "prepare": "husky",
+    "rarible_editions:deploy-dev:solana-dev-net": "anchor build -p rarible_editions && anchor deploy -p rarible_editions --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
+    "rarible_editions_controls:deploy-dev:solana-dev-net": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
+    "rarible_marketplace:deploy-dev:solana-dev-net": "anchor build -p rarible_marketplace && anchor deploy -p rarible_marketplace --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
+
+    "rarible_editions:deploy:eclipse-dev2": "anchor deploy -p rarible_editions --provider.cluster https://staging-rpc.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json",
+    "rarible_editions_controls:deploy:eclipse-dev2": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://staging-rpc.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json",
+
+    "rarible_editions:deploy:eclipse-testnet": "anchor build -p rarible_editions && anchor deploy -p rarible_editions --provider.cluster https://testnet.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json",
+    "rarible_editions_controls:deploy:eclipse-testnet": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://testnet.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json"
+    
   },
   "repository": {
     "type": "git",
