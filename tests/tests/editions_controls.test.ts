@@ -20,7 +20,7 @@ import {
 } from '../utils/getters';
 import { Transaction } from '@solana/web3.js';
 // devnote: try to make tests don't rely on hard addresses but on dynamic runtime ids.
-import { TOKEN_GROUP_EXTENSION_PROGRAM_ID } from '../../constants';
+import { TOKEN_GROUP_EXTENSION_PROGRAM_ID } from '../constants';
 import { getEditionsPda, getEditionsControlsPda, getHashlistPda, getHashlistMarkerPda, getMinterStatsPda, getMinterStatsPhasePda } from '../utils/pdas';
 import { CollectionConfig, AllowListConfig, PhaseConfig } from '../utils/types';
 

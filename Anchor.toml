@@ -4,14 +4,20 @@
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-rarible_marketplace = "B6ckscvApoZpBZ7cKGYa4VK4vTc1x9XjPk6osKfK7rSZ"
-
 [programs.devnet]
-rarible_marketplace = "B6ckscvApoZpBZ7cKGYa4VK4vTc1x9XjPk6osKfK7rSZ"
+rarible_editions = "DsaxZA54w7N9z8jxobtzy3rhQQmXjngjvJNvX1HubtkJ"
+rarible_editions_controls = "bozxrH9R1qvQh7P1gid3X8DRXK1UmVckit6XxGAUN72"
+rarible_marketplace = "61AUdCJkaaw2b3Byhp9gLyK6rvt8DTsUoGTKwnvEZMaf"
+
+[programs.localnet]
+rarible_editions = "DsaxZA54w7N9z8jxobtzy3rhQQmXjngjvJNvX1HubtkJ"
+rarible_editions_controls = "bozxrH9R1qvQh7P1gid3X8DRXK1UmVckit6XxGAUN72"
+rarible_marketplace = "61AUdCJkaaw2b3Byhp9gLyK6rvt8DTsUoGTKwnvEZMaf"
 
 [programs.mainnet]
-rarible_marketplace = "rAREXWkxUP9Cr91tRVJ29NumDAEKvNpDWZNqcfSwBNG"
+rarible_editions = "DsaxZA54w7N9z8jxobtzy3rhQQmXjngjvJNvX1HubtkJ"
+rarible_editions_controls = "bozxrH9R1qvQh7P1gid3X8DRXK1UmVckit6XxGAUN72"
+rarible_marketplace = "61AUdCJkaaw2b3Byhp9gLyK6rvt8DTsUoGTKwnvEZMaf"
 
 [registry]
 url = "https://api.apr.dev"
