@@ -33,9 +33,9 @@ import {
 
 import { PROGRAM_ID_MARKETPLACE } from "@rarible_int/protocol-contracts-svm-core";
 
-export const getProvider = () => {
+export const getProvider = (rpcUrl: string = "https://api.devnet.solana.com") => {
   const connection = new Connection(
-    process.env.RPC_URL ?? "https://api.devnet.solana.com"
+    process.env.RPC_URL ?? rpcUrl
   );
   const anchorProvider = AnchorProvider.local();
   const provider = new AnchorProvider(connection, anchorProvider.wallet, {
