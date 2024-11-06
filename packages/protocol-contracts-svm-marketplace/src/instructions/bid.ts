@@ -80,7 +80,7 @@ export const bid = async ({
       paymentTokenProgram,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
-      program: market,
+      program: marketProgram.programId,
       eventAuthority,
       paymentMint: params.paymentMint,
     })
