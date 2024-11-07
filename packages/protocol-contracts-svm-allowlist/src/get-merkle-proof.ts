@@ -1,21 +1,15 @@
 import { ObjectManager } from "@filebase/sdk";
-import dotenv from "dotenv";
 import { IncomingMessage } from "http";
 
-dotenv.config();
-
-const FILEBASE_S3_KEY = process.env.FILEBASE_S3_KEY;
-const FILEBASE_S3_SECRET = process.env.FILEBASE_S3_SECRET;
-const FILEBASE_BUCKET_NAME = process.env.FILEBASE_BUCKET_NAME;
-
-
-const filebaseStructure = {
-  folder: "proofs",
-  collectionAddress: "7jTd4kUTkSv9MH1TMuKqkjuTFuaCeruh1mYGGHnzXFJS",
-  phase: "0",
-};
-
-const getProofForAddress = async (address: string) => {
+export const getProofForAddress = async (
+  address: string,
+  FILEBASE_S3_KEY: string,
+  FILEBASE_S3_SECRET: string,
+  FILEBASE_BUCKET_NAME: string,
+  FILEBASE_FOLDER: string,
+  FILEBASE_COLLECTION_ADDRESS: string,
+  FILEBASE_PHASE_INDEX: string
+) => {
   if (!FILEBASE_S3_KEY || !FILEBASE_S3_SECRET || !FILEBASE_BUCKET_NAME) {
     throw new Error("Filebase credentials are not set");
   }
@@ -24,7 +18,7 @@ const getProofForAddress = async (address: string) => {
   });
 
   try {
-    const objectKey = `${filebaseStructure.folder}/${filebaseStructure.collectionAddress}/${filebaseStructure.phase}/${address}.json`;
+    const objectKey = `${FILEBASE_FOLDER}/${FILEBASE_COLLECTION_ADDRESS}/${FILEBASE_PHASE_INDEX}/${address}.json`;
     const downloadResult = await objectManager.download(objectKey, {});
 
     if (downloadResult instanceof IncomingMessage) {
@@ -32,7 +26,7 @@ const getProofForAddress = async (address: string) => {
       for await (const chunk of downloadResult) {
         chunks.push(Buffer.from(chunk));
       }
-      const data = Buffer.concat(chunks).toString('utf8');
+      const data = Buffer.concat(chunks).toString("utf8");
       const proofData = JSON.parse(data);
       console.log(`Proof for address ${address}:`, proofData);
       return proofData;
@@ -44,12 +38,3 @@ const getProofForAddress = async (address: string) => {
     return null;
   }
 };
-
-// Example usage
-const queryProof = async () => {
-  const addressToQuery = "EA7uZqppoesNd3uvixCAgt426cbNKfanYemToJXNwQon"; // Replace with the address you want to query
-  await getProofForAddress(addressToQuery);
-};
-
-// Run the query
-queryProof().catch(console.error);

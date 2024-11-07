@@ -1,0 +1,42 @@
+{
+  "name": "@rarible_int/protocol-contracts-svm-allowlist",
+  "version": "0.1.0",
+  "keywords": [
+    "rarible",
+    "editions",
+    "allowlist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rariblecom/minting-sdk.git"
+  },
+  "license": "MIT",
+  "main": "build/index.js",
+  "files": [
+    "/build"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig-build.json",
+    "clean": "mkdir -p build && mkdir -p node_modules && rm -rf build && rm -rf node_modules",
+    "package": "npx shx mkdir -p lib/cjs lib/esm lib/types",
+    "generate-burn-allowlist": "ts-node scripts/generate-burn-allowlist.ts",
+    "upload-proofs": "ts-node scripts/upload-proofs.ts",
+    "get-merkle-proof": "ts-node scripts/get-merkle-proof.ts"
+  },
+  "dependencies": {
+    "airtable": "^0.12.2",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "ethers": "^6.13.4",
+    "ts-node": "^10.9.2",
+    "typescript": "5.3.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "registry": "http://nexus.rarible.int/repository/npm/"
+  }
+}

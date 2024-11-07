@@ -15,20 +15,15 @@
     "clients": "node ./kinobi.mjs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "prepare": "husky",
-
     "upload-merkle-proofs": "ts-node scripts/upload-merkle-proofs.ts",
     "get-merkle-proof": "ts-node scripts/get-merkle-proof.ts",
-
     "rarible_editions:deploy-dev:solana-dev-net": "anchor build -p rarible_editions && anchor deploy -p rarible_editions --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
     "rarible_editions_controls:deploy-dev:solana-dev-net": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
     "rarible_marketplace:deploy-dev:solana-dev-net": "anchor build -p rarible_marketplace && anchor deploy -p rarible_marketplace --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
-
     "rarible_editions:deploy:eclipse-dev2": "anchor deploy -p rarible_editions --provider.cluster https://staging-rpc.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json",
     "rarible_editions_controls:deploy:eclipse-dev2": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://staging-rpc.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json",
-
     "rarible_editions:deploy:eclipse-testnet": "anchor build -p rarible_editions && anchor deploy -p rarible_editions --provider.cluster https://testnet.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json",
     "rarible_editions_controls:deploy:eclipse-testnet": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://testnet.dev2.eclipsenetwork.xyz --provider.wallet ~/.config/solana/id.json"
-    
   },
   "repository": {
     "type": "git",
@@ -36,7 +31,6 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",
-    "@filebase/sdk": "^1.0.6",
     "@kinobi-so/nodes": "^0.20.6",
     "@kinobi-so/nodes-from-anchor": "^0.20.8",
     "@kinobi-so/renderers": "^0.20.14",
@@ -52,6 +46,7 @@
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@faker-js/faker": "^8.4.1",
+    "@filebase/sdk": "^1.0.6",
     "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.0.0",
@@ -59,13 +54,14 @@
     "anchor-bankrun": "^0.3.0",
     "chai": "^4.3.4",
     "conventional-changelog-cli": "^5.0.0",
+    "csv-writer": "^1.6.0",
     "husky": "^9.0.11",
+    "lerna": "^6.0.3",
     "mocha": "^9.0.3",
     "prettier": "^2.6.2",
     "solana-bankrun": "^0.3.0",
     "ts-mocha": "^10.0.0",
-    "typescript": "^4.3.5",
-    "lerna": "^6.0.3"
+    "typescript": "^4.3.5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
