@@ -8,7 +8,7 @@ pub mod utils;
 use instructions::*;
 
 // rAREXWkxUP9Cr91tRVJ29NumDAEKvNpDWZNqcfSwBNG - program id
-declare_id!("663amaqT3YG3Y7mwLReeqGgp9GGzzqRcCs1XQwEt3PdM");
+declare_id!("61AUdCJkaaw2b3Byhp9gLyK6rvt8DTsUoGTKwnvEZMaf");
 
 #[program]
 pub mod marketplace {
@@ -46,8 +46,9 @@ pub mod marketplace {
     #[inline(never)]
     pub fn fill_order<'info>(
         ctx: Context<'_, '_, '_, 'info, FillOrder<'info>>,
+        amount: u64,
     ) -> Result<()> {
-        instructions::order::fill::handler(ctx)
+        instructions::order::fill::handler(ctx, amount)
     }
 
     /// cancel a buy order
