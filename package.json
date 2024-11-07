@@ -9,7 +9,7 @@
     "clients": "node ./kinobi.mjs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "prepare": "husky",
-    "upload-merkle-tree": "ts-node scripts/upload-merkle-tree.ts",
+    "upload-merkle-proofs": "ts-node scripts/upload-merkle-proofs.ts",
     "get-merkle-proof": "ts-node scripts/get-merkle-proof.ts"
   },
   "repository": {
@@ -31,8 +31,8 @@
     "recursive-fs": "^2.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@faker-js/faker": "^8.4.1",
     "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.3.0",

@@ -10,6 +10,12 @@ const FILEBASE_S3_KEY = process.env.FILEBASE_S3_KEY;
 const FILEBASE_S3_SECRET = process.env.FILEBASE_S3_SECRET;
 const FILEBASE_BUCKET_NAME = process.env.FILEBASE_BUCKET_NAME;
 
+const filebaseStructure = {
+  folder: "proofs",
+  collectionAddress: "7jTd4kUTkSv9MH1TMuKqkjuTFuaCeruh1mYGGHnzXFJS",
+  phase: "0",
+};
+
 const uploadMerkleTree = async () => {
   if (!FILEBASE_S3_KEY || !FILEBASE_S3_SECRET || !FILEBASE_BUCKET_NAME) {
     throw new Error("Filebase credentials are not set");
@@ -47,8 +53,9 @@ const uploadMerkleTree = async () => {
 
     // upload proof to the object manager (filebase)
     console.log(`Uploading proof for ${claimant} (${counter}/${totalNodes})...`);
-    const uploadedObject = await objectManager.upload(`proofs/${fileName}`, stringifiedProof, {}, {});
-    console.log(`Uploaded: proofs/${fileName}`);
+    const filebasePath = `${filebaseStructure.folder}/${filebaseStructure.collectionAddress}/${filebaseStructure.phase}/${fileName}`;
+    const uploadedObject = await objectManager.upload(filebasePath, stringifiedProof, {}, {});
+    console.log(`Uploaded: ${filebasePath}`);
   }
   console.log("Finished uploading merkle tree proofs successfully.");
 };
