@@ -1,3 +1,6 @@
+export ANCHOR_WALLET=~/.config/solana/id.json
+export ANCHOR_PROVIDER_URL=https://api.devnet.solana.com
+
 npx ts-node ./src/initMarket.ts \
   -k ~/.config/solana/id.json \
   -r https://api.devnet.solana.com \

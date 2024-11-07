@@ -152,8 +152,9 @@ export const isWnsNft = async (provider: Provider, mint: string) => {
 
   const extraMeta = metadata.additionalMetadata;
   const royalties = extraMeta.filter((m) => m[0] === "royalty_basis_points");
+  // TODO : check differently
   if (royalties.length > 0) {
-    return true;
+    return false;
   }
 
   return false;
