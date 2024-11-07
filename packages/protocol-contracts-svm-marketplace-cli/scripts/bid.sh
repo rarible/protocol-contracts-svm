@@ -24,6 +24,6 @@ npx ts-node ./src/bid.ts \
   -r "$RPC_ENDPOINT" \
   -m "$MARKET_IDENTIFIER" \
   --nftMint "$NFT_MINT" \
-  --paymentMint "$PAYMENT_MINT" \
+  --paymentMint "So11111111111111111111111111111111111111112" \
   --price "$PRICE" \
   --size "$SIZE"

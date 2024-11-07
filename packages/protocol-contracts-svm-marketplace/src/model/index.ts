@@ -23,3 +23,10 @@ export type BidParams = {
 	price: number;
 	extraAccountParams: WnsAccountParams | undefined; // Add metaplex
 };
+
+export type FillOrderParams = {
+    orderAddress: string;
+    amountToFill: number; 
+    nftMint: string;
+    extraAccountParams: WnsAccountParams | undefined
+}
