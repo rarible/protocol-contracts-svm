@@ -56,16 +56,9 @@ import {
       market.toString(),
       initializer
     );
-    const initializerPaymentTa = getAtaAddress(
-      params.paymentMint,
-      initializer,
-      paymentTokenProgram.toString()
-    );
-    const orderPaymentTa = getAtaAddress(
-      params.paymentMint,
-      order.toString(),
-      paymentTokenProgram.toString()
-    );
+
+    const initializerPaymentTa = getAtaAddress(params.paymentMint, initializer, paymentTokenProgram.toString());
+	const orderPaymentTa = getAtaAddress(params.paymentMint, order.toString(), paymentTokenProgram.toString());
   
     // Log all account addresses before creating the instruction
     console.log("Accounts used in the transaction:");
