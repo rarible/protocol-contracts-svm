@@ -17,7 +17,7 @@ pub use state::*;
 
 pub mod group_extension_program {
     use anchor_lang::declare_id;
-    declare_id!("5hx15GaPPqsYA61v6QpcGPpo125v7rfvEfZQ4dJErG5V");
+    declare_id!("RariGDYwEF1jQA4kisHxBxiv1TDuBPVHNNoXFNYriFb");
 }
 
 #[program]
