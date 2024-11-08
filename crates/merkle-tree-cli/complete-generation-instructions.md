@@ -1,19 +1,29 @@
-### Instructions:
+### Instructions for Generating and Managing Allowlists
 
-1. Clone the `protocol-contracts-svm` repository.
-2. Switch to the `mybranch` branch.
-3. Run `yarn install` to install dependencies.
+#### Initial Setup
 
-4. Navigate to the `packages/protocol-contracts-svm-allowlist` directory.
-5. Populate the `.env` file with the required environment variables.
-6. Run `npm run generate-burn-allowlist` to generate the allowlist.
-7. Copy the generated `allow-list.csv` file.
+1. Clone the `protocol-contracts-svm` repository
+2. Switch to the `feature/svm-merkle-trees` branch
+3. Run `yarn install` to install dependencies
 
-8. Navigate to the `crates/merkle-tree-cli` directory.
-9. Paste the `allow-list.csv` file into the `/data` folder.
-10. Run `cargo run create-merkle-tree --csv-path ./data/allow_list.csv --merkle-tree-path ./data/merkle_tree.json` to create the Merkle tree.
+#### Allowlist Generation
 
-To upload the proofs to Filebase and let them ready to be pulled from the minting-sdk:
-11. Navigate to the `packages/protocol-contracts-svm-allowlist` directory.
-12. Update your environment variables with the necessary Collection and Filebase configuration.
-13. Run `npm run upload-proofs`.
+4. Navigate to `packages/protocol-contracts-svm-allowlist` directory
+5. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Fill in required values (see Environment Variables section in README)
+6. Generate the allowlist:
+   - Run `npm run get-airtable-entries` to fetch burn entries
+   - Run `npm run generate-burn-allowlist` to create the allowlist
+7. Copy the generated `allow-list.csv` file to `crates/merkle-tree-cli/data` folder
+8. Run `npm run generate-merkle-tree` to create the Merkle tree
+
+#### Managing Proofs
+
+9. Upload proofs to Web3.Storage:
+
+   - Run `npm run upload-proofs-web3storage`
+   - Save the returned CID for future reference
+
+10. Retrieve proofs (when needed):
+    - Run `npm run get-proof-web3storage` to fetch proof for specific address
