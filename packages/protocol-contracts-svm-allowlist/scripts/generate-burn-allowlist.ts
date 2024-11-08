@@ -1,24 +1,12 @@
-import { generateAllowlist } from "../src/generate-allowlist";
+import { generateAllowlist } from "../src/generate-burn-allowlist";
 import dotenv from "dotenv";
+import { readRawFromCSV } from "../src/utils";
 
 dotenv.config();
 
 const main = async () => {
-  if (
-    !process.env.AIRTABLE_API_KEY ||
-    !process.env.AIRTABLE_BASE_ID ||
-    !process.env.AIRTABLE_TABLE_NAME ||
-    !process.env.BURN_CONTRACT_ADDRESS
-  ) {
-    throw new Error("AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, and BURN_CONTRACT_ADDRESS must be set");
-  }
-
-  await generateAllowlist(
-    process.env.AIRTABLE_API_KEY,
-    process.env.AIRTABLE_BASE_ID,
-    process.env.AIRTABLE_TABLE_NAME,
-    process.env.BURN_CONTRACT_ADDRESS
-  );
+  const rawEntries = readRawFromCSV("raw-burners.csv");
+  await generateAllowlist(rawEntries, 100);
 };
 
 main();

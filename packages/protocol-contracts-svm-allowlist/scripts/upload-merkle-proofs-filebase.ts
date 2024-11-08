@@ -1,5 +1,5 @@
 import path from "path";
-import { uploadMerkleTree } from "../src/upload-merkle-proofs";
+import { uploadMerkleTree } from "../src/upload-merkle-proofs-filebase";
 import dotenv from "dotenv";
 
 dotenv.config();
