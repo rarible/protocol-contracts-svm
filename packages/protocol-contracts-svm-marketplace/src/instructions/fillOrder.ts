@@ -216,7 +216,7 @@ import {
   
     console.log(`Transaction ID: ${txid}`);
     console.log(`Order Address: ${orderAddress}`);
-    console.log(`Market Address: ${market.market.toBase58()}`);
+    console.log(`Market: ${market}`);
   
     return { txid, tx, order, market };
   };
