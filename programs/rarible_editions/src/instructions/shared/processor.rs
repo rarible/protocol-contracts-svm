@@ -1,3 +1,4 @@
+/// Accounts to mint an NFT.
 use anchor_lang::prelude::*;
 
 use solana_program::{
@@ -35,7 +36,6 @@ pub struct TokenGroupInput<'f> {
 pub struct TokenMemberInput<'f> {
     pub group: AccountInfo<'f>,
     pub member: AccountInfo<'f>,
-    pub group_mint: AccountInfo<'f>,
 }
 
 pub struct TransferFeeParams {
@@ -244,7 +244,7 @@ pub fn create_token_2022_and_metadata<'a>(
                     &spl_token_2022::ID,
                     &nft_mint.key(),
                     Some(authority.key()),
-                    Some(x.group_mint.key()),
+                    Some(x.group.key()),
                 )
                 .unwrap();
             match &auth_seeds {
@@ -254,7 +254,7 @@ pub fn create_token_2022_and_metadata<'a>(
                         &[
                             nft_mint.to_account_info(),
                             authority.to_account_info(),
-                            x.group_mint.to_account_info(),
+                            x.group.to_account_info(),
                         ],
                         &[y],
                     )?;
@@ -265,7 +265,7 @@ pub fn create_token_2022_and_metadata<'a>(
                         &[
                             nft_mint.to_account_info(),
                             authority.to_account_info(),
-                            x.group_mint.to_account_info(),
+                            x.group.to_account_info(),
                         ],
                     )?;
                 }

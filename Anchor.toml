@@ -5,12 +5,12 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-rarible_editions = "Cgzg8Q7oGLRr5nzMsyu8ALp4eZnDpv1ZKDw1eiJPApaP"
-rarible_editions_controls = "AdsNtBvUWxFoEuGSxGGYxtFFjLte8TPbAieLYKcX6S9K"
+rarible_editions = "3H7a6aiAy28qbCzUro4SNobVManBVwmFe8b36FF3SBuc"
+rarible_editions_controls = "5DoVAe7uQpHZmNwhJDaPBc8opeDFT4q5oYNFuJYhGyBa"
 rarible_marketplace = "Rarim7DMoD45z1o25QWPsWvTdFSSEdxaxriwWZLLTic"
 
 [programs.localnet]
-rarible_editions = "Rari9ftBd6vFdtpn8TDLwN2ze24KKkM5MLEETNiBMNn"
+rarible_editions = "3H7a6aiAy28qbCzUro4SNobVManBVwmFe8b36FF3SBuc"
 rarible_editions_controls = "RariUNM3vz1rwxPg8UJyRAN7rSKXxgd2ncS2ddCa4ZE"
 rarible_marketplace = "Rarim7DMoD45z1o25QWPsWvTdFSSEdxaxriwWZLLTic"
 

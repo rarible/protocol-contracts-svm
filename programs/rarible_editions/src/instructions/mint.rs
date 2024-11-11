@@ -160,7 +160,6 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
         Some(TokenMemberInput {
             member: member.to_account_info(),
             group: group.to_account_info(),
-            group_mint: group_mint.to_account_info(),
         }),
         Some(deployment_seeds),
         None,
