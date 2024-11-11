@@ -18,6 +18,9 @@
 
     "rarible_group:deploy:solana-dev-net": " solana program deploy ./bins/spl_token_group_example.so --program-id target/deploy/spl_token_group_example-keypair.json --url https://api.devnet.solana.com",
     "rarible_editions:deploy:solana-dev-net": "anchor build -p rarible_editions && anchor deploy -p rarible_editions --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
+    "extend": "solana program extend Cgzg8Q7oGLRr5nzMsyu8ALp4eZnDpv1ZKDw1eiJPApaP 1028896",
+    "double-size": "echo $(( $(stat -f%z target/deploy/rarible_editions.so) * 2 ))",
+    "rarible_editions:upgrade:solana-dev-net": "anchor build -p rarible_editions && anchor upgrade target/deploy/rarible_editions.so --program-id Cgzg8Q7oGLRr5nzMsyu8ALp4eZnDpv1ZKDw1eiJPApaP --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
     "rarible_editions_controls:deploy:solana-dev-net": "anchor build -p rarible_editions_controls && anchor deploy -p rarible_editions_controls --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
     "rarible_marketplace:deploy:solana-dev-net": "anchor build -p rarible_marketplace && anchor deploy -p rarible_marketplace --provider.cluster https://api.devnet.solana.com --provider.wallet ~/.config/solana/id.json",
 

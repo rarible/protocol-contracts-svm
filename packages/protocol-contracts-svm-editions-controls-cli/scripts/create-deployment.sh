@@ -2,7 +2,7 @@ npx ts-node ./src/createDeployment.ts \
   -t BTicWgGhoTsBANuirXS7UCeF6bxfvTnCaxM5HQRRfGZS \
   -k ~/.config/solana/id.json \
   -r https://api.devnet.solana.com \
-  -s CAT01 \
+  -s CAT02 \
   --maxNumberOfTokens 1000 \
   --maxMintsPerWallet 100 \
   -u "ipfs://QmfJh4B8KySR1KHaXRNWkcDBn67ZuJkzAyaVCWAS8Kcezc/0" \
@@ -17,9 +17,9 @@ npx ts-node ./src/createDeployment.ts \
   --itemBaseName "Cat #{}" 
 
 
-npx ts-node ./src/addPhase.ts -d FSXxZhrzPvCF4ebDSddBYWzTtC4KswdxN42zMXBsHpk9 -k ~/.config/solana/id.json -r https://api.devnet.solana.com --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 500 -s 1709564319 -e 1959564319
+npx ts-node ./src/addPhase.ts -d 6B9VTRqqqcN22fUNcUVLsN1nswNW3LGxr8MUTXKsdBcu -k ~/.config/solana/id.json -r https://api.devnet.solana.com --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 500 -s 1709564319 -e 1959564319
 
-npx ts-node ./src/mintWithControls.ts -d FSXxZhrzPvCF4ebDSddBYWzTtC4KswdxN42zMXBsHpk9 -k ~/.config/solana/id.json -r https://api.devnet.solana.com -p 0 -n 1
+npx ts-node ./src/mintWithControls.ts -d 6B9VTRqqqcN22fUNcUVLsN1nswNW3LGxr8MUTXKsdBcu -k ~/.config/solana/id.json -r https://api.devnet.solana.com -p 0 -n 1
 
 
 npx ts-node ./src/createDeployment.ts \

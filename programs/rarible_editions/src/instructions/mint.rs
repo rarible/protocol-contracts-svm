@@ -4,13 +4,14 @@ use anchor_spl::{
     associated_token::AssociatedToken, token_2022,
 };
 use dyn_fmt::AsStrFormatExt;
-use libreplex_shared::{create_token_2022_and_metadata, operations::mint_non_fungible_2022_logic, MintAccounts2022, SharedError, TokenMemberInput};
 use spl_pod::optional_keys::OptionalNonZeroPubkey;
 use spl_token_metadata_interface::state::{Field, TokenMetadata};
 
 use crate::utils::{get_mint_metadata, update_account_lamports_to_minimum_balance};
 use crate::{add_to_hashlist, errors::EditionsError, group_extension_program, EditionsDeployment, HashlistMarker};
+use crate::shared::{SharedError,create_token_2022_and_metadata, MintAccounts2022, TokenMemberInput, mint_non_fungible_2022_logic };
 
+use super::TokenGroupInput;
 #[derive(Accounts)]
 pub struct MintCtx<'info> {
     #[account(mut,
@@ -159,6 +160,7 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
         Some(TokenMemberInput {
             member: member.to_account_info(),
             group: group.to_account_info(),
+            group_mint: group_mint.to_account_info(),
         }),
         Some(deployment_seeds),
         None,

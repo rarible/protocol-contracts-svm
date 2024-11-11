@@ -100,7 +100,8 @@ export const mintWithControls = async ({
         false,
         TOKEN_2022_PROGRAM_ID
       );
-
+      console.log("editionsObj",JSON.stringify(editionsObj.item));
+      console.log("editionsObj.groupMint",JSON.stringify(editionsObj.item.groupMint));
       const hashlistMarker = getHashlistMarkerPda(editions, mint.publicKey)[0];
 
       instructions.push(
