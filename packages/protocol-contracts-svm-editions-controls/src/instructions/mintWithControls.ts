@@ -100,8 +100,7 @@ export const mintWithControls = async ({
         false,
         TOKEN_2022_PROGRAM_ID
       );
-      console.log("editionsObj",JSON.stringify(editionsObj.item));
-      console.log("editionsObj.groupMint",JSON.stringify(editionsObj.item.groupMint));
+
       const hashlistMarker = getHashlistMarkerPda(editions, mint.publicKey)[0];
 
       instructions.push(
@@ -115,13 +114,9 @@ export const mintWithControls = async ({
           .accountsStrict({
             editionsDeployment: editions,
             editionsControls: editionsControlsPda,
-            hashlist,
-            hashlistMarker,
             payer: wallet.publicKey,
             mint: mint.publicKey,
             member: member.publicKey,
-            signer: wallet.publicKey,
-            minter: wallet.publicKey,
             minterStats,
             minterStatsPhase,
             group: editionsObj.item.group,
@@ -153,15 +148,13 @@ export const mintWithControls = async ({
 
   await wallet.signAllTransactions(txs);
 
-  const promises = txs.map(item =>
-    sendSignedTransaction({
-      signedTransaction: item,
+  for(let txi in txs) {
+    await sendSignedTransaction({
+      signedTransaction: txs[txi],
       connection,
       skipPreflight: false,
     })
-  );
-
-  await Promise.all(promises);
+  }
 
   console.log("Minting successful.");
 

@@ -19,7 +19,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "clean": "mkdir -p build &&  mkdir -p node_modules && rm -rf build && rm -rf node_modules",
-    "build": "tsc -b ./tsconfig-build.json"
+    "build": "pwd"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",

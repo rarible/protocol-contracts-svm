@@ -38,8 +38,9 @@ const opts = cli.opts();
   const connection = new Connection(opts.rpc);
 
   // Read the keypair file to create a wallet
+  console.log("wallet 0")
   const wallet = await getWallet(opts.ledger, opts.keypairPath);
-
+  console.log("wallet 1")
   // Parse the recipients input (address:share pairs)
   const recipients = opts.recipients.split(",").map((recipient: string) => {
     const [address, share] = recipient.split(":");
@@ -50,11 +51,11 @@ const opts = cli.opts();
     }
     return { address: new PublicKey(address), share: parseInt(share) };
   });
-
+  console.log("wallet 2")
   // Parse platform fee value and isFeeFlat flag
   const platformFeeValue = new BN(opts.platformFeeValue);
   const isFeeFlat = !!opts.isFeeFlat;
-
+  console.log("wallet 3", opts.deploymentId, platformFeeValue, isFeeFlat, recipients)
   try {
     // Call modifyPlatformFee function to update platform fee on-chain
     const { editions, txid } = await modifyPlatformFee({

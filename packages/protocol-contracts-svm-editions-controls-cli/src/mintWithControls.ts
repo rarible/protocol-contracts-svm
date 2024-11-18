@@ -28,8 +28,8 @@ const opts = cli.opts();
 
   let merkleProof = null;
   if (opts.merkleProofPath) {
-    const merkleData = JSON.parse(fs.readFileSync(path.resolve(opts.merkleProofPath), "utf8"));
-    merkleProof = merkleData.merkle_proof;
+    const merkleData = JSON.parse(fs.readFileSync(opts.merkleProofPath, "utf8"));
+    merkleProof = merkleData.proof;
   }
 
   const isAllowListMint = !!merkleProof;
@@ -41,18 +41,18 @@ const opts = cli.opts();
 
   const wallet = await getWallet(opts.ledger, opts.keypairPath);
   await mintWithControls({
-    wallet: wallet,
-    params: {
-      editionsId: opts.deploymentId,
-      phaseIndex: +opts.phaseIndex,
-      numberOfMints: +opts.numberOfMints,
-      merkleProof: merkleProof,
-      allowListPrice: isAllowListMint ? opts.allowListPrice : null,
-      allowListMaxClaims: isAllowListMint ? opts.allowListMaxClaims : null,
-      isAllowListMint,
-    },
-    connection,
-  })
+      wallet: wallet,
+      params: {
+        editionsId: opts.deploymentId,
+        phaseIndex: +opts.phaseIndex,
+        numberOfMints: +opts.numberOfMints,
+        merkleProof: merkleProof,
+        allowListPrice: isAllowListMint ? opts.allowListPrice : null,
+        allowListMaxClaims: isAllowListMint ? opts.allowListMaxClaims : null,
+        isAllowListMint,
+      },
+      connection,
+    })
     .catch(error => {
       console.error("Error during minting: ", JSON.stringify(error, null, 2));
     })
