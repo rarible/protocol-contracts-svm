@@ -1,4 +1,4 @@
-npx ts-node ./src/createDeployment.ts \
+npx ts-node ./src/cli/createDeployment.ts \
   -t 5dL2dd2ZBQs92XXbaRV7ZH2FJ6k5euinM3Sg1FhkktJF \
   -k ~/.config/solana/id.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -15,7 +15,7 @@ npx ts-node ./src/createDeployment.ts \
   --itemBaseUri "ipfs://bafybeib3ogmisx45y45er4jjxi3nd7cta5smeapdoueodkt363g4loeisa/{}.json" \
   --itemBaseName "AOFE"
 
-npx ts-node ./src/addPhase.ts \
+npx ts-node ./src/cli/addPhase.ts \
     -d 8GERj2yoAr2wz3ET2CYG6zBRerT6noS3s9UiXUJWfQPH \
     -k ~/.config/solana/id.json \
     -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -25,14 +25,14 @@ npx ts-node ./src/addPhase.ts \
     -s 1701596401 \
     -e 1732201201
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d 56wx6BBU4GtLnQS9E2DbAJAREvKAuhrsia8RbLYQZ5tH \
   -k ~/.config/solana/id.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
   -p 0 \
   -n 1
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d AB5EF8EdAEJZUywTuVVmDPeoQemML1T7d7gJbMHKQHZb \
   -k ~/.config/solana/prod-keypair.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -44,7 +44,7 @@ npx ts-node ./src/mintWithControls.ts \
 
   BvvjuPAw7qpJU3B1vNpAgqPLmLErHv8izEBNbbhz936K
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d BvvjuPAw7qpJU3B1vNpAgqPLmLErHv8izEBNbbhz936K \
   -k ~/.config/solana/prod-keypair.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \

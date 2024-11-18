@@ -1,4 +1,4 @@
-npx ts-node ./src/createDeployment.ts \
+npx ts-node ./src/cli/createDeployment.ts \
   -t 5dL2dd2ZBQs92XXbaRV7ZH2FJ6k5euinM3Sg1FhkktJF \
   -k ~/.config/solana/prod-keypair.json \
   -r https://mainnetbeta-rpc.eclipse.xyz \
@@ -15,7 +15,7 @@ npx ts-node ./src/createDeployment.ts \
   --itemBaseUri "ipfs://bafybeib3ogmisx45y45er4jjxi3nd7cta5smeapdoueodkt363g4loeisa/{}.json" \
   --itemBaseName "AOFE"
 
-npx ts-node ./src/addPhase.ts \
+npx ts-node ./src/cli/addPhase.ts \
   -d 3bHD7zQGmxVJnxJaSCkzrZyPRUH9Tx5RjkMjUN8fyRTU \
   -k ~/.config/solana/prod-keypair.json \
   -r https://mainnetbeta-rpc.eclipse.xyz \
@@ -27,7 +27,7 @@ npx ts-node ./src/addPhase.ts \
   # --isPrivate true \
   # --merkleRootPath ./scripts/figure31-deploy/merkle_tree.json
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d 3bHD7zQGmxVJnxJaSCkzrZyPRUH9Tx5RjkMjUN8fyRTU \
   -k ~/.config/solana/id.json  \
   -r https://mainnetbeta-rpc.eclipse.xyz \

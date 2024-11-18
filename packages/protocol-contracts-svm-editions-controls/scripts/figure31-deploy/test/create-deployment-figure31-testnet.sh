@@ -1,4 +1,4 @@
-npx ts-node ./src/createDeployment.ts \
+npx ts-node ./src/cli/createDeployment.ts \
   -t 5dL2dd2ZBQs92XXbaRV7ZH2FJ6k5euinM3Sg1FhkktJF \
   -k ~/.config/solana/id.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -15,7 +15,7 @@ npx ts-node ./src/createDeployment.ts \
   --itemBaseUri "ipfs://bafybeib3ogmisx45y45er4jjxi3nd7cta5smeapdoueodkt363g4loeisa/{}.json" \
   --itemBaseName "AOFE"
 
-npx ts-node ./src/addPhase.ts \
+npx ts-node ./src/cli/addPhase.ts \
     -d AB5EF8EdAEJZUywTuVVmDPeoQemML1T7d7gJbMHKQHZb \
     -k ~/.config/solana/id.json \
     -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -27,7 +27,7 @@ npx ts-node ./src/addPhase.ts \
     --isPrivate true \
     --merkleRootPath /Users/vfadeev/Work/solana/protocol-contracts-svm/packages/protocol-contracts-svm-editions-controls-cli/scripts/figure31-deploy/test/merkle_tree_test.json
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d 2fQwHcwAvNPCHuYPUCVhqj1LLdXyqBLK3tH8DoScDXyC \
   -k ~/.config/solana/prod-keypair.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -37,7 +37,7 @@ npx ts-node ./src/mintWithControls.ts \
   --allowListPrice 320000 \
   --allowListMaxClaims 2
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d AB5EF8EdAEJZUywTuVVmDPeoQemML1T7d7gJbMHKQHZb \
   -k ~/.config/solana/prod-keypair.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -49,7 +49,7 @@ npx ts-node ./src/mintWithControls.ts \
 
   BvvjuPAw7qpJU3B1vNpAgqPLmLErHv8izEBNbbhz936K
 
-npx ts-node ./src/mintWithControls.ts \
+npx ts-node ./src/cli/mintWithControls.ts \
   -d BvvjuPAw7qpJU3B1vNpAgqPLmLErHv8izEBNbbhz936K \
   -k ~/.config/solana/prod-keypair.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \

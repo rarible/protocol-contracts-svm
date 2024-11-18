@@ -1,7 +1,7 @@
 export {};
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { Command } from "commander";
-import {modifyRoyalties} from "@rarible_int/protocol-contracts-svm-editions-controls"
+import {modifyRoyalties} from "../instructions"
 import {getWallet} from "@rarible_int/protocol-contracts-svm-core"
 
 const cli = new Command();

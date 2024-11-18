@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Command } from "commander";
 import { Connection } from "@solana/web3.js";
-import {mintWithControls} from "@rarible_int/protocol-contracts-svm-editions-controls"
+import {mintWithControls} from "../instructions"
 import {getWallet} from "@rarible_int/protocol-contracts-svm-core"
 
 const cli = new Command();

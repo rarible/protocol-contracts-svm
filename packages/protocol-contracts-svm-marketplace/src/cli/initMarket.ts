@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { Command } from "commander";
-import { initMarket } from "@rarible_int/protocol-contracts-svm-marketplace";
+import { initMarket } from "../instructions";
 import { getWallet } from "@rarible_int/protocol-contracts-svm-core";
 
 const cli = new Command();

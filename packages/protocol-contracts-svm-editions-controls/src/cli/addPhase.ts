@@ -2,7 +2,7 @@ import { Connection} from "@solana/web3.js";
 import fs from "fs";
 import path from "path";
 import { Command } from "commander";
-import {addPhase} from "@rarible_int/protocol-contracts-svm-editions-controls"
+import {addPhase} from "../instructions"
 import {getWallet} from "@rarible_int/protocol-contracts-svm-core"
 
 const cli = new Command();

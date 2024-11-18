@@ -3,7 +3,7 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { Command } from "commander";
 import BN from "bn.js";
-import {modifyPlatformFee} from "@rarible_int/protocol-contracts-svm-editions-controls"
+import {modifyPlatformFee} from "../instructions"
 import {getWallet} from "@rarible_int/protocol-contracts-svm-core"
 
 const cli = new Command();

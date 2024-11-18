@@ -1,4 +1,4 @@
-npx ts-node ./src/createDeployment.ts \
+npx ts-node ./src/cli/createDeployment.ts \
   -t BTicWgGhoTsBANuirXS7UCeF6bxfvTnCaxM5HQRRfGZS \
   -k ~/.config/solana/prod-keypair.json \
   -r https://mainnetbeta-rpc.eclipse.xyz \
@@ -17,12 +17,12 @@ npx ts-node ./src/createDeployment.ts \
   --itemBaseName "Cat #{}"
 
 
-npx ts-node ./src/addPhase.ts -d F3UQtVYuPEuesi4ga7aZXaq4axHrnKzzwodBdqYwhCTe -k ~/.config/solana/prod-keypair.json -r https://mainnetbeta-rpc.eclipse.xyz --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 320000 -s 1709564319 -e 1959564319
+npx ts-node ./src/cli/addPhase.ts -d F3UQtVYuPEuesi4ga7aZXaq4axHrnKzzwodBdqYwhCTe -k ~/.config/solana/prod-keypair.json -r https://mainnetbeta-rpc.eclipse.xyz --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 320000 -s 1709564319 -e 1959564319
 
-npx ts-node ./src/mintWithControls.ts -d F3UQtVYuPEuesi4ga7aZXaq4axHrnKzzwodBdqYwhCTe -k ~/.config/solana/prod-keypair.json -r https://mainnetbeta-rpc.eclipse.xyz -p 0 -n 1
+npx ts-node ../src/cli/mintWithControls.ts -d F3UQtVYuPEuesi4ga7aZXaq4axHrnKzzwodBdqYwhCTe -k ~/.config/solana/prod-keypair.json -r https://mainnetbeta-rpc.eclipse.xyz -p 0 -n 1
 
 
-npx ts-node ./src/createDeployment.ts \
+npx ts-node ./src/cli/createDeployment.ts \
   -t BTicWgGhoTsBANuirXS7UCeF6bxfvTnCaxM5HQRRfGZS \
   -k ~/.config/solana/id.json \
   -r https://testnet.dev2.eclipsenetwork.xyz \
@@ -40,6 +40,6 @@ npx ts-node ./src/createDeployment.ts \
   --itemBaseUri "ipfs://QmdHaufjUDJgbZzZ4eFCjtJQyeQpuNwoEvqLm5rq159vC8/{}" \
   --itemBaseName "Cat #{}" 
 
-npx ts-node ./src/addPhase.ts -d 6rr6y63XZNjoSWFejvUtVTgvKxxM3iiUNST2g758QXXB -k ~/.config/solana/id.json -r https://testnet.dev2.eclipsenetwork.xyz --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 500 -s 1709564319 -e 1731938380
+npx ts-node ./src/cli/addPhase.ts -d 6rr6y63XZNjoSWFejvUtVTgvKxxM3iiUNST2g758QXXB -k ~/.config/solana/id.json -r https://testnet.dev2.eclipsenetwork.xyz --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 500 -s 1709564319 -e 1731938380
 
-npx ts-node ./src/mintWithControls.ts -d 6rr6y63XZNjoSWFejvUtVTgvKxxM3iiUNST2g758QXXB -k ~/.config/solana/id.json -r https://testnet.dev2.eclipsenetwork.xyz -p 0 -n 1
+npx ts-node ./src/cli/mintWithControls.ts -d 6rr6y63XZNjoSWFejvUtVTgvKxxM3iiUNST2g758QXXB -k ~/.config/solana/id.json -r https://testnet.dev2.eclipsenetwork.xyz -p 0 -n 1
