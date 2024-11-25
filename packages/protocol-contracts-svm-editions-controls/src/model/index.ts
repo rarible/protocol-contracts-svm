@@ -75,3 +75,17 @@ export interface IModifyPlatformFee {
   isFeeFlat: boolean;
   recipients: { address: PublicKey; share: number }[];
 }
+
+export interface IModifyPhase {
+  deploymentId: string;
+  priceAmount: number;
+  priceToken: string; // PublicKey as string
+  maxMintsTotal: number;
+  maxMintsPerWallet: number;
+  startTime: number;
+  endTime: number;
+  merkleRoot: number[] | null; // Assuming merkleRoot is an array of numbers or null
+  isPrivate: boolean;
+  active: boolean;
+  phaseIndex: number;
+}
