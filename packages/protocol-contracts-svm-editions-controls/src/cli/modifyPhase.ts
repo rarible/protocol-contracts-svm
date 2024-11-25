@@ -7,32 +7,22 @@ import { getWallet } from "@rarible_int/protocol-contracts-svm-core";
 
 const cli = new Command();
 
-const parseNumber = (value, previous) => {
-  const parsedValue = Number(value);
-  if (isNaN(parsedValue)) {
-    throw new Error('Not a number.');
-  }
-  return parsedValue;
-};
 
 cli
   .version("1.0.0")
-  .description("Modify an existing phase in a control deployment")
+  .description("Add phase to a control deployment")
   .requiredOption("-k, --keypairPath <keypairPath>", "Keypair")
-  .requiredOption("-r, --rpc <rpc>", "RPC URL")
-  .requiredOption("-d, --deploymentId <deploymentId>", "Controls ID")
-  .requiredOption("-i, --phaseIndex <phaseIndex>", "Index of the phase to modify", parseNumber)
-  .option("-s, --startTime <startTime>", "Start time (Unix timestamp)", parseNumber)
-  .option("-e, --endTime <endTime>", "End time (Unix timestamp)", parseNumber)
-  .requiredOption("--maxMintsPerWallet <maxMintsPerWallet>", "Max mints per wallet (0 for unlimited)", parseNumber)
-  .requiredOption("--maxMintsTotal <maxMintsTotal>", "Max mints total for the phase (0 for unlimited)", parseNumber)
-  .requiredOption("--priceAmount <priceAmount>", "Price per mint in lamports (can be 0)", parseNumber)
-  .option("--priceToken, --priceToken", "If set, the custome token 2022 will be used")
-  .option("-p, --isPrivate", "If set, the phase will be allow-list only")
+  .requiredOption("-r, --rpc <rpc>", "RPC")
+  .requiredOption("-d, --deploymentId <deploymentId>", "controls ID")
+  .option("-s, --startTime <startTime>", "start time")
+  .option("-e, --endTime <endTime>", "end time")
+  .requiredOption("--maxMintsPerWallet <maxMintsPerWallet>", "Max mints per wallet (total), 0 for unlimited")
+  .requiredOption("--maxMintsTotal <maxMintsTotal>", "Max mints per phase (total across all wallets), 0 for unlimited")
+  .requiredOption("--priceAmount <priceAmount>", "Price per mint in lamports, can be 0")
+  .requiredOption("--phaseIndex <phaseIndex>", "Phase index, can be 0")
   .option("-m, --merkleRootPath <merkleRootPath>", "Path to JSON file containing merkle root")
-  .option("-p, --isPrivate", "If set, the phase will be allow-list only")
-  .option("-a, --active", "If set, the phase will be active")
-  .option("--ledger", "Use Ledger hardware wallet")
+  .option("-p, --isPrivate <isPrivate>", "If true, the phase will be allow-list only")
+  .option("--ledger", "if you want to use ledger pass true")
   .parse(process.argv);
 
 const opts = cli.opts();
@@ -68,8 +58,8 @@ const opts = cli.opts();
           startTime: opts.startTime ? +opts.startTime : null,
           endTime: opts.endTime ? +opts.endTime : null,
           merkleRoot: merkleRoot,
-          isPrivate: !!opts.isPrivate,
-          active: !!opts.active,
+          isPrivate: opts.isPrivate ? opts.isPrivate : false,
+          active: opts.active ? opts.active : true,
           priceToken: opts.priceToken ? opts.priceToken : "So11111111111111111111111111111111111111112"
       },
       connection,
