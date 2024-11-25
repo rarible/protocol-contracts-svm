@@ -18,3 +18,5 @@ proofs/
 data/
 data/**/*
 backup-keys
+metadata
+cat-meta

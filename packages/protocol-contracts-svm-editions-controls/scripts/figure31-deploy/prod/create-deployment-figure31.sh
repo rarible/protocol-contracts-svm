@@ -27,6 +27,16 @@ npx ts-node ./src/cli/addPhase.ts \
   # --isPrivate true \
   # --merkleRootPath ./scripts/figure31-deploy/merkle_tree.json
 
+npx ts-node ./src/cli/addPhase.ts \
+  -d 3bHD7zQGmxVJnxJaSCkzrZyPRUH9Tx5RjkMjUN8fyRTU \
+  -k ~/.config/solana/prod-keypair.json \
+  -r https://mainnetbeta-rpc.eclipse.xyz \
+  --maxMintsPerWallet 300 \
+  --maxMintsTotal 70221 \
+  --priceAmount 0 \
+  -s 1732287600 \
+  -e 1732485600
+
 npx ts-node ./src/cli/mintWithControls.ts \
   -d 3bHD7zQGmxVJnxJaSCkzrZyPRUH9Tx5RjkMjUN8fyRTU \
   -k ~/.config/solana/id.json  \

@@ -65,6 +65,7 @@ export interface CreatorWithShare {
     allowListPrice?: number;
     allowListMaxClaims?: number;
     isAllowListMint: boolean;
+    recipient?: string;
   }
 
   // Arguments for modifying platform fee

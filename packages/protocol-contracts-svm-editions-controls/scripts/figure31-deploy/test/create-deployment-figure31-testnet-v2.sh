@@ -25,6 +25,16 @@ npx ts-node ./src/cli/addPhase.ts \
     -s 1701596401 \
     -e 1732201201
 
+npx ts-node ./src/cli/addPhase.ts \
+    -d 8GERj2yoAr2wz3ET2CYG6zBRerT6noS3s9UiXUJWfQPH \
+    -k ~/.config/solana/id.json \
+    -r https://testnet.dev2.eclipsenetwork.xyz \
+    --maxMintsPerWallet 300 \
+    --maxMintsTotal 70221 \
+    --priceAmount 320000 \
+    -s 1701596401 \
+    -e 1782201201
+
 npx ts-node ./src/cli/mintWithControls.ts \
   -d 56wx6BBU4GtLnQS9E2DbAJAREvKAuhrsia8RbLYQZ5tH \
   -k ~/.config/solana/id.json \

@@ -3,7 +3,7 @@ import path from "path";
 import { Command } from "commander";
 import { Connection } from "@solana/web3.js";
 import {mintWithControls} from "../instructions"
-import {getWallet} from "@rarible_int/protocol-contracts-svm-core"
+import {getWallet, sleep} from "@rarible_int/protocol-contracts-svm-core"
 
 const cli = new Command();
 
@@ -18,8 +18,9 @@ cli
   .option("-m, --merkleProofPath <merkleProofPath>", "Path to JSON file containing merkle proof")
   .option("-a, --allowListPrice <allowListPrice>", "Allow list price")
   .option("-c, --allowListMaxClaims <allowListMaxClaims>", "Allow list max claims")
-  .option("--recipient, --recipient <recipient>", "recipient of nft")
+  .option("--qty, --qty <qty>", "now many tokens to mint")
   .option("--ledger", "if you want to use ledger pass true")
+  .option("--recipient, --recipient <recipient>", "recipient of nft")
   .parse(process.argv);
 
 const opts = cli.opts();
@@ -41,7 +42,9 @@ const opts = cli.opts();
   }
 
   const wallet = await getWallet(opts.ledger, opts.keypairPath);
-  await mintWithControls({
+  for(let i = 0; i < opts.qty; i++) {
+    
+    const res = await mintWithControls({
       wallet: wallet,
       params: {
         editionsId: opts.deploymentId,
@@ -61,4 +64,9 @@ const opts = cli.opts();
     .finally(() => {
       console.log("Finished minting");
     });
+
+    console.log("mint i:", i, (res as any).tokenAccount)
+    await sleep(200);
+  }
+
 })();
