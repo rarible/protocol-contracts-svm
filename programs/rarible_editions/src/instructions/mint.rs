@@ -1,15 +1,19 @@
 use anchor_lang::{prelude::*, system_program};
 use anchor_spl::token_2022_extensions::{token_metadata_update_field, TokenMetadataUpdateField};
-use anchor_spl::{
-    associated_token::AssociatedToken, token_2022,
-};
+use anchor_spl::{associated_token::AssociatedToken, token_2022};
 use dyn_fmt::AsStrFormatExt;
-use libreplex_shared::{create_token_2022_and_metadata, operations::mint_non_fungible_2022_logic, MintAccounts2022, SharedError, TokenMemberInput};
+use libreplex_shared::{
+    create_token_2022_and_metadata, operations::mint_non_fungible_2022_logic, MintAccounts2022,
+    SharedError, TokenMemberInput,
+};
 use spl_pod::optional_keys::OptionalNonZeroPubkey;
 use spl_token_metadata_interface::state::{Field, TokenMetadata};
 
 use crate::utils::{get_mint_metadata, update_account_lamports_to_minimum_balance};
-use crate::{add_to_hashlist, errors::EditionsError, group_extension_program, EditionsDeployment, HashlistMarker};
+use crate::{
+    add_to_hashlist, errors::EditionsError, group_extension_program, EditionsDeployment,
+    HashlistMarker,
+};
 
 #[derive(Accounts)]
 pub struct MintCtx<'info> {
@@ -18,13 +22,13 @@ pub struct MintCtx<'info> {
     pub editions_deployment: Account<'info, EditionsDeployment>,
 
     /// CHECK: Checked in PDA. Not deserialized because it can be rather big
-    #[account(mut, 
+    #[account(mut,
         seeds = ["hashlist".as_bytes(), 
         editions_deployment.key().as_ref()],
         bump,)]
     pub hashlist: UncheckedAccount<'info>,
 
-    #[account(init, 
+    #[account(init,
         space = HashlistMarker::SIZE,
         payer = payer,
         seeds = ["hashlist_marker".as_bytes(), 
@@ -88,7 +92,7 @@ pub struct MintCtx<'info> {
 }
 
 pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()> {
-    // let MintToken2022Ctx { 
+    // let MintToken2022Ctx {
 
     //     ..
     // } = &ctx.accounts;
@@ -110,12 +114,18 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
     let editions_deployment = &mut ctx.accounts.editions_deployment;
     let hashlist = &mut ctx.accounts.hashlist;
 
-    if !editions_deployment.cosigner_program_id.eq(&system_program::ID) && !signer.key().eq(&editions_deployment.creator.key()) {
+    if !editions_deployment
+        .cosigner_program_id
+        .eq(&system_program::ID)
+        && !signer.key().eq(&editions_deployment.creator.key())
+    {
         return Err(SharedError::InvalidCreatorCosigner.into());
     }
 
-    // max_number_of_tokens == 0 means unlimited mints 
-    if editions_deployment.max_number_of_tokens > 0 && editions_deployment.number_of_tokens_issued >= editions_deployment.max_number_of_tokens {
+    // max_number_of_tokens == 0 means unlimited mints
+    if editions_deployment.max_number_of_tokens > 0
+        && editions_deployment.number_of_tokens_issued >= editions_deployment.max_number_of_tokens
+    {
         return Err(EditionsError::MintedOut.into());
     }
 
@@ -129,13 +139,17 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
     ];
 
     let item_name = match editions_deployment.item_name_is_template {
-        true => editions_deployment.item_base_name.format(&[editions_deployment.number_of_tokens_issued + 1]),
-        false => editions_deployment.item_base_name.clone()
+        true => editions_deployment
+            .item_base_name
+            .format(&[editions_deployment.number_of_tokens_issued + 1]),
+        false => editions_deployment.item_base_name.clone(),
     };
 
     let item_url = match editions_deployment.item_uri_is_template {
-        true => editions_deployment.item_base_uri.format(&[editions_deployment.number_of_tokens_issued + 1]),
-        false => editions_deployment.item_base_uri.clone()
+        true => editions_deployment
+            .item_base_uri
+            .format(&[editions_deployment.number_of_tokens_issued + 1]),
+        false => editions_deployment.item_base_uri.clone(),
     };
 
     create_token_2022_and_metadata(
@@ -193,7 +207,6 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
 
     // Process each additional metadata key-value pair, excluding platform fee metadata
     for additional_metadatum in additional_meta {
-
         let deployment_seeds: &[&[u8]] = &[
             "editions_deployment".as_bytes(),
             editions_deployment.symbol.as_ref(),
@@ -213,7 +226,11 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
             signer_seeds,
         );
 
-        token_metadata_update_field(cpi_ctx, Field::Key(additional_metadatum.0), additional_metadatum.1)?;
+        token_metadata_update_field(
+            cpi_ctx,
+            Field::Key(additional_metadatum.0),
+            additional_metadatum.1,
+        )?;
     }
 
     // Transfer minimum rent to the mint account
@@ -222,6 +239,6 @@ pub fn mint<'info>(ctx: Context<'_, '_, '_, 'info, MintCtx<'info>>) -> Result<()
         ctx.accounts.payer.to_account_info(),
         ctx.accounts.system_program.to_account_info(),
     )?;
-    
+
     Ok(())
 }

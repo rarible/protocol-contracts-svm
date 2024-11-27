@@ -1,20 +1,14 @@
+use crate::{
+    check_allow_list_constraints, check_phase_constraints, errors::EditionsControlsError,
+    EditionsControls, MinterStats,
+};
 use anchor_lang::{prelude::*, system_program};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token_2022::{self, ID as TOKEN_2022_ID},
 };
 use rarible_editions::{
-    group_extension_program,
-    program::RaribleEditions, 
-    EditionsDeployment,
-    cpi::accounts::MintCtx
-};
-use crate::{
-    EditionsControls,
-    MinterStats,
-    errors::EditionsControlsError,
-    check_phase_constraints,
-    check_allow_list_constraints
+    cpi::accounts::MintCtx, group_extension_program, program::RaribleEditions, EditionsDeployment,
 };
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
@@ -113,7 +107,6 @@ pub struct MintWithControlsCtx<'info> {
     // TODO add optimization for stack
     // #[account(mut)]
     // pub platform_fee_recipient_2: UncheckedAccount<'info>,
-
     /// CHECK: Passed in via CPI to mpl_token_metadata program
     #[account(mut)]
     pub token_account: UncheckedAccount<'info>,
@@ -142,10 +135,7 @@ pub struct MintWithControlsCtx<'info> {
     pub rarible_editions_program: Program<'info, RaribleEditions>,
 }
 
-pub fn mint_with_controls(
-    ctx: Context<MintWithControlsCtx>,
-    mint_input: MintInput,
-) -> Result<()> {
+pub fn mint_with_controls(ctx: Context<MintWithControlsCtx>, mint_input: MintInput) -> Result<()> {
     let editions_controls = &mut ctx.accounts.editions_controls;
     let minter_stats = &mut ctx.accounts.minter_stats;
     let minter_stats_phase = &mut ctx.accounts.minter_stats_phase;
@@ -210,10 +200,7 @@ pub fn mint_with_controls(
     Ok(())
 }
 
-fn validate_phase(
-    editions_controls: &EditionsControls,
-    phase_index: u32,
-) -> Result<()> {
+fn validate_phase(editions_controls: &EditionsControls, phase_index: u32) -> Result<()> {
     if phase_index >= editions_controls.phases.len() as u32 {
         if editions_controls.phases.is_empty() {
             return Err(EditionsControlsError::NoPhasesAdded.into());
@@ -238,14 +225,12 @@ fn update_minter_and_phase_stats(
     minter_stats_phase.wallet = *minter_key;
     minter_stats_phase.mint_count = minter_stats_phase.mint_count.saturating_add(1);
 
-    editions_controls.phases[phase_index].current_mints =
-        editions_controls.phases[phase_index].current_mints.saturating_add(1);
+    editions_controls.phases[phase_index].current_mints = editions_controls.phases[phase_index]
+        .current_mints
+        .saturating_add(1);
 }
 
-fn process_platform_fees(
-    ctx: &Context<MintWithControlsCtx>,
-    price_amount: u64,
-) -> Result<()> {
+fn process_platform_fees(ctx: &Context<MintWithControlsCtx>, price_amount: u64) -> Result<()> {
     let editions_controls = &ctx.accounts.editions_controls;
     let payer = &ctx.accounts.payer;
     let treasury = &ctx.accounts.treasury;
@@ -272,7 +257,8 @@ fn process_platform_fees(
             .checked_div(10_000)
             .ok_or(EditionsControlsError::FeeCalculationError)?;
 
-        remaining_amount = price_amount.checked_sub(total_fee)
+        remaining_amount = price_amount
+            .checked_sub(total_fee)
             .ok_or(EditionsControlsError::FeeCalculationError)?;
     }
 
@@ -325,36 +311,31 @@ fn process_platform_fees(
     Ok(())
 }
 
-fn perform_mint(
-    ctx: &Context<MintWithControlsCtx>,
-    seeds: &[&[u8]],
-) -> Result<()> {
+fn perform_mint(ctx: &Context<MintWithControlsCtx>, seeds: &[&[u8]]) -> Result<()> {
     let rarible_editions_program = &ctx.accounts.rarible_editions_program;
     let editions_controls = &ctx.accounts.editions_controls;
 
-    rarible_editions::cpi::mint(
-        CpiContext::new_with_signer(
-            rarible_editions_program.to_account_info(),
-            MintCtx {
-                editions_deployment: ctx.accounts.editions_deployment.to_account_info(),
-                hashlist: ctx.accounts.hashlist.to_account_info(),
-                hashlist_marker: ctx.accounts.hashlist_marker.to_account_info(),
-                payer: ctx.accounts.payer.to_account_info(),
-                signer: editions_controls.to_account_info(),
-                minter: ctx.accounts.minter.to_account_info(),
-                mint: ctx.accounts.mint.to_account_info(),
-                group: ctx.accounts.group.to_account_info(),
-                group_mint: ctx.accounts.group_mint.to_account_info(),
-                token_account: ctx.accounts.token_account.to_account_info(),
-                token_program: ctx.accounts.token_program.to_account_info(),
-                associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
-                system_program: ctx.accounts.system_program.to_account_info(),
-                group_extension_program: ctx.accounts.group_extension_program.to_account_info(),
-                member: ctx.accounts.member.to_account_info(),
-            },
-            &[seeds],
-        ),
-    )?;
+    rarible_editions::cpi::mint(CpiContext::new_with_signer(
+        rarible_editions_program.to_account_info(),
+        MintCtx {
+            editions_deployment: ctx.accounts.editions_deployment.to_account_info(),
+            hashlist: ctx.accounts.hashlist.to_account_info(),
+            hashlist_marker: ctx.accounts.hashlist_marker.to_account_info(),
+            payer: ctx.accounts.payer.to_account_info(),
+            signer: editions_controls.to_account_info(),
+            minter: ctx.accounts.minter.to_account_info(),
+            mint: ctx.accounts.mint.to_account_info(),
+            group: ctx.accounts.group.to_account_info(),
+            group_mint: ctx.accounts.group_mint.to_account_info(),
+            token_account: ctx.accounts.token_account.to_account_info(),
+            token_program: ctx.accounts.token_program.to_account_info(),
+            associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
+            system_program: ctx.accounts.system_program.to_account_info(),
+            group_extension_program: ctx.accounts.group_extension_program.to_account_info(),
+            member: ctx.accounts.member.to_account_info(),
+        },
+        &[seeds],
+    ))?;
 
     Ok(())
 }
