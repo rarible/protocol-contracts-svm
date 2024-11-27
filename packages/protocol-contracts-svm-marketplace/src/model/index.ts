@@ -26,7 +26,6 @@ export type BidParams = {
 
 export type FillOrderParams = {
     orderAddress: string;
-    amountToFill: number; 
-    nftMint: string;
+    amountToFill: number;
     extraAccountParams: WnsAccountParams | undefined
 }
