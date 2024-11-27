@@ -13,3 +13,6 @@ pub use metadata::*;
 
 pub mod mint;
 pub use mint::*;
+
+pub mod shared;
+pub use shared::*;

@@ -34,33 +34,22 @@ pub struct MintWithControlsCtx<'info> {
     )]
     pub editions_controls: Box<Account<'info, EditionsControls>>,
 
-    /// CHECK: Checked via CPI
-    #[account(mut)]
-    pub hashlist: UncheckedAccount<'info>,
-
-    /// CHECK: Checked via CPI
-    #[account(mut)]
-    pub hashlist_marker: UncheckedAccount<'info>,
-
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    /// When deployment.require_creator_cosign is true, this must be equal to the creator
-    /// of the deployment; otherwise, can be any signer account
-    #[account(
-        constraint = editions_controls.cosigner_program_id == system_program::ID
-            || signer.key() == editions_deployment.creator
-    )]
-    pub signer: Signer<'info>,
-
+    // /// When deployment.require_creator_cosign is true, this must be equal to the creator
+    // /// of the deployment; otherwise, can be any signer account
+    // #[account(
+    //     constraint = editions_controls.cosigner_program_id == system_program::ID
+    //         || signer.key() == editions_deployment.creator
+    // )]
+    // pub signer: Signer<'info>,
     /// CHECK: Anybody can sign, anybody can receive the inscription
-    #[account(mut)]
-    pub minter: UncheckedAccount<'info>,
 
     #[account(
         init_if_needed,
         payer = payer,
-        seeds = [b"minter_stats", editions_deployment.key().as_ref(), minter.key().as_ref()],
+        seeds = [b"minter_stats", editions_deployment.key().as_ref(), payer.key().as_ref()],
         bump,
         space = MinterStats::SIZE
     )]
@@ -72,7 +61,7 @@ pub struct MintWithControlsCtx<'info> {
         seeds = [
             b"minter_stats_phase",
             editions_deployment.key().as_ref(),
-            minter.key().as_ref(),
+            payer.key().as_ref(),
             &mint_input.phase_index.to_le_bytes()
         ],
         bump,
@@ -104,9 +93,6 @@ pub struct MintWithControlsCtx<'info> {
     #[account(mut)]
     pub platform_fee_recipient_1: UncheckedAccount<'info>,
 
-    // TODO add optimization for stack
-    // #[account(mut)]
-    // pub platform_fee_recipient_2: UncheckedAccount<'info>,
     /// CHECK: Passed in via CPI to mpl_token_metadata program
     #[account(mut)]
     pub token_account: UncheckedAccount<'info>,
@@ -139,7 +125,7 @@ pub fn mint_with_controls(ctx: Context<MintWithControlsCtx>, mint_input: MintInp
     let editions_controls = &mut ctx.accounts.editions_controls;
     let minter_stats = &mut ctx.accounts.minter_stats;
     let minter_stats_phase = &mut ctx.accounts.minter_stats_phase;
-    let minter = &ctx.accounts.minter;
+    let minter = &ctx.accounts.payer;
 
     // Phase validation
     validate_phase(editions_controls, mint_input.phase_index)?;
@@ -319,11 +305,9 @@ fn perform_mint(ctx: &Context<MintWithControlsCtx>, seeds: &[&[u8]]) -> Result<(
         rarible_editions_program.to_account_info(),
         MintCtx {
             editions_deployment: ctx.accounts.editions_deployment.to_account_info(),
-            hashlist: ctx.accounts.hashlist.to_account_info(),
-            hashlist_marker: ctx.accounts.hashlist_marker.to_account_info(),
             payer: ctx.accounts.payer.to_account_info(),
             signer: editions_controls.to_account_info(),
-            minter: ctx.accounts.minter.to_account_info(),
+            minter: ctx.accounts.payer.to_account_info(),
             mint: ctx.accounts.mint.to_account_info(),
             group: ctx.accounts.group.to_account_info(),
             group_mint: ctx.accounts.group_mint.to_account_info(),
