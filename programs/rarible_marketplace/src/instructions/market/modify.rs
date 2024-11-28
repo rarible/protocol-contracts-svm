@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::state::*;
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
-pub struct InitMarketParams {
+pub struct ModifyMarketParams {
     pub fee_recipient: Pubkey,
     pub fee_bps: u64,
     pub fee_recipient_secondary: Option<Pubkey>,
@@ -13,41 +13,36 @@ pub struct InitMarketParams {
 #[derive(Accounts)]
 #[instruction()]
 #[event_cpi]
-pub struct InitMarket<'info> {
+pub struct ModifyMarket<'info> {
     #[account(mut)]
     pub initializer: Signer<'info>,
     #[account()]
     /// CHECK: doesn't actually need to be a mint
     pub market_identifier: UncheckedAccount<'info>,
     #[account(
-        init,
         seeds = [MARKET_SEED,
         market_identifier.key().as_ref()],
         bump,
-        payer = initializer,
-        space = 8 + std::mem::size_of::<Market>()
+        constraint = market.initializer == initializer.key()
     )]
     pub market: Box<Account<'info, Market>>,
     pub system_program: Program<'info, System>,
 }
 
 #[inline(always)]
-pub fn handler(ctx: Context<InitMarket>, params: InitMarketParams) -> Result<()> {
-    msg!("Initializing new market");
-    Market::init(
-        &mut ctx.accounts.market,
-        ctx.accounts.market_identifier.key(),
-        ctx.accounts.initializer.key(),
-        params.fee_recipient,
-        params.fee_bps,
-        params.fee_recipient_secondary,
-        params.fee_bps_secondary,
-    );
+pub fn handler(ctx: Context<ModifyMarket>, params: ModifyMarketParams) -> Result<()> {
+    msg!("Modify existing market");
+    let market = &mut ctx.accounts.market;
+
+    market.fee_recipient = params.fee_recipient;
+    market.fee_bps = params.fee_bps;
+    market.fee_recipient_secondary = params.fee_recipient_secondary;
+    market.fee_bps_secondary = params.fee_bps_secondary;
 
     emit_cpi!(Market::get_edit_event(
         &mut ctx.accounts.market.clone(),
         ctx.accounts.market.key(),
-        MarketEditType::Init
+        MarketEditType::Modify
     ));
     Ok(())
 }

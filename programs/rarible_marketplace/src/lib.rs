@@ -21,6 +21,13 @@ pub mod marketplace {
         instructions::market::init::handler(ctx, params)
     }
 
+    /// modify market
+    #[inline(never)]
+    pub fn modify_market(ctx: Context<ModifyMarket>, params: ModifyMarketParams) -> Result<()> {
+        instructions::market::modify::handler(ctx, params)
+    }
+    
+
     /// initializer a new market
     #[inline(never)]
     pub fn verify_mint(ctx: Context<VerifyMint>) -> Result<()> {

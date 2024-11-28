@@ -1,13 +1,13 @@
-# WEN Program Library
+# Rarible Program Library
 
-A collection of Solana programs maintained by the WEN developer community.
+A collection of Solana programs maintained by the Rarible developer community.
 
 
 IDL and json in export folder.
 
 ## Contents
 
-- [WEN Program Library](#wen-program-library)
+- [Rarible Program Library](#rarible-program-library)
   - [Contents](#contents)
   - [Overview](#overview)
   - [Building](#building)

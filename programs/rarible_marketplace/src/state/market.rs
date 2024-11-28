@@ -19,8 +19,12 @@ pub struct Market {
     pub fee_recipient: Pubkey,
     /// fee basis points
     pub fee_bps: u64,
+    /// second address that should receive market fees
+    pub fee_recipient_secondary: Option<Pubkey>,
+    /// fee basis points for secondary address; if fee bps secondary is zero don't pay
+    pub fee_bps_secondary: Option<u64>,
     /// reserved space for future changes
-    pub reserve: [u8; 512],
+    pub reserve: [u8; 470],
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone, Copy, PartialEq, IntoPrimitive)]
@@ -36,6 +40,7 @@ pub enum MarketState {
 #[repr(u8)]
 pub enum MarketEditType {
     Init,
+    Modify
 }
 
 #[account()]
@@ -64,6 +69,8 @@ pub struct MarketEditEvent {
     pub state: u8,
     pub fee_recipient: String,
     pub fee_bps: u64,
+    pub fee_recipient_secondary: Option<String>,
+    pub fee_bps_secondary: Option<u64>,
 }
 
 impl Market {
@@ -74,6 +81,8 @@ impl Market {
         initializer: Pubkey,
         fee_recipient: Pubkey,
         fee_bps: u64,
+        fee_recipient_secondary: Option<Pubkey>,
+        fee_bps_secondary: Option<u64>,
     ) {
         self.version = MARKET_VERSION;
         self.market_identifier = market_identifier;
@@ -81,6 +90,8 @@ impl Market {
         self.state = MarketState::Open.into();
         self.fee_recipient = fee_recipient;
         self.fee_bps = fee_bps;
+        self.fee_recipient_secondary = fee_recipient_secondary;
+        self.fee_bps_secondary = fee_bps_secondary;
     }
 
     /// return true if the market is active
@@ -102,6 +113,10 @@ impl Market {
             state: self.state,
             fee_recipient: self.fee_recipient.to_string(),
             fee_bps: self.fee_bps,
+            fee_recipient_secondary: self
+            .fee_recipient_secondary
+            .map(|recipient| recipient.to_string()),
+            fee_bps_secondary: self.fee_bps_secondary,
         }
     }
 }

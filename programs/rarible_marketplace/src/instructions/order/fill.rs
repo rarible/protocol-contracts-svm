@@ -67,6 +67,13 @@ pub struct FillOrder<'info> {
     #[account(mut)]
     /// CHECK: checked by create_ata function
     pub fee_recipient_ta: UncheckedAccount<'info>,
+
+    /// CHECK: This account is checked in the instruction
+    pub fee_recipient_secondary: Option<UncheckedAccount<'info>>,
+    #[account(mut)]
+    /// CHECK: This account is checked in the instruction
+    pub fee_recipient_secondary_ta: Option<UncheckedAccount<'info>>,
+
     pub system_program: Program<'info, System>,
     pub nft_token_program: Interface<'info, TokenInterface>,
     /// CHECK: checked by constraint and in cpi
@@ -265,6 +272,47 @@ impl<'info> FillOrder<'info> {
     }
 
     #[inline(never)]
+    fn transfer_fee_secondary(
+        &self,
+        signer_seeds: &[&[&[u8]]],
+        is_buy: bool,
+        amount: u64,
+    ) -> Result<()> {
+        let fee_recipient_secondary_ta = self
+            .fee_recipient_secondary_ta
+            .as_ref()
+            .ok_or(ProgramError::InvalidAccountData)?;
+
+        let cpi_ctx = if is_buy {
+            // Buyer pays the secondary fee
+            CpiContext::new(
+                self.payment_token_program.to_account_info(),
+                TransferChecked {
+                    from: self.buyer_payment_ta.to_account_info(),
+                    to: fee_recipient_secondary_ta.to_account_info(),
+                    authority: self.taker.to_account_info(),
+                    mint: self.payment_mint.to_account_info(),
+                },
+            )
+        } else {
+            // Seller pays the secondary fee
+            CpiContext::new_with_signer(
+                self.payment_token_program.to_account_info(),
+                TransferChecked {
+                    from: self.seller_payment_ta.to_account_info(),
+                    to: fee_recipient_secondary_ta.to_account_info(),
+                    authority: self.order.to_account_info(),
+                    mint: self.payment_mint.to_account_info(),
+                },
+                signer_seeds,
+            )
+        };
+
+        transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+    }
+
+
+    #[inline(never)]
     fn wrap_sol_if_needed(&self, amount: u64, is_buy: bool) -> Result<()> {
         if self.payment_mint.key() == WSOL_MINT && !is_buy {
             invoke_wrap_sol(
@@ -334,6 +382,27 @@ pub fn handler<'info>(
     let fee_amount = get_fee_amount(buy_value, ctx.accounts.market.fee_bps);
 
     let mut seller_received_amount = buy_value - fee_amount;
+
+    let fee_bps_secondary = ctx.accounts.market.fee_bps_secondary.unwrap_or(0);
+    let recipient_secondary = ctx
+    .accounts
+    .fee_recipient_secondary
+    .as_ref()
+    .map(|acct| acct.key())
+    .unwrap_or_default();
+    let fee_amount_secondary = if fee_bps_secondary > 0 {
+        require!(
+            recipient_secondary == ctx.accounts.market.fee_recipient_secondary.unwrap_or_default(),
+            MarketError::UnsupportedNft
+        );
+
+        get_fee_amount(buy_value, fee_bps_secondary)
+    } else {
+        0
+    };
+
+    seller_received_amount -= fee_amount_secondary;
+    
 
     let is_buy = ctx.accounts.order.side == 0;
     // Verify maker + taker accounts
@@ -409,6 +478,21 @@ pub fn handler<'info>(
         &payment_token_program,
     )?;
 
+    if fee_amount_secondary > 0 {
+        if let Some(fee_recipient_secondary) = &ctx.accounts.fee_recipient_secondary {
+            create_ata(
+                &ctx.accounts.fee_recipient_secondary_ta.as_ref().expect("Missing Fee Rec 2 TA").to_account_info(),
+                &ctx.accounts.taker.to_account_info(),
+                &ctx.accounts.payment_mint.to_account_info(),
+                &fee_recipient_secondary.to_account_info(),
+                &ctx.accounts.system_program.to_account_info(),
+                &ctx.accounts.payment_token_program.to_account_info(),
+            )?;
+        } else {
+            return Err(ProgramError::InvalidArgument.into());
+        }
+    }
+
     ctx.accounts.wrap_sol_if_needed(buy_value, is_buy)?;
 
     // Transfer NFT
@@ -480,6 +564,10 @@ pub fn handler<'info>(
         .transfer_payment(signer_seeds, is_buy, seller_received_amount)?;
     ctx.accounts
         .transfer_fee(signer_seeds, is_buy, fee_amount)?;
+    if fee_amount_secondary > 0 {
+        ctx.accounts
+        .transfer_fee_secondary(signer_seeds, is_buy, fee_amount_secondary)?;
+    }
 
     ctx.accounts.unwrap_sol_if_needed(is_buy)?;
 
