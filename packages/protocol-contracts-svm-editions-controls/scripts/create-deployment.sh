@@ -25,7 +25,7 @@ npx ts-node ../src/cli/mintWithControls.ts -d F3UQtVYuPEuesi4ga7aZXaq4axHrnKzzwo
 npx ts-node ./src/cli/createDeployment.ts \
   -t BTicWgGhoTsBANuirXS7UCeF6bxfvTnCaxM5HQRRfGZS \
   -k ~/.config/solana/id.json \
-  -r https://api.devnet.solana.com \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
   -s CAT04 \
   --maxNumberOfTokens 1000 \
   --maxMintsPerWallet 100 \
