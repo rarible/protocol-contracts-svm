@@ -8,7 +8,7 @@ export interface CollectionConfig {
   collectionName: string;
   collectionUri: string;
   royalties: {
-    royaltyBasisPoints: anchor.BN;
+    royaltyBasisPoints: number;
     creators: { address: PublicKey; share: number }[];
   };
   platformFee: {
@@ -24,12 +24,12 @@ export interface CollectionConfig {
 }
 
 export interface AllowListConfig {
-  merkleRoot: Buffer;
+  merkleRoot: number[];
   list: {
     address: PublicKey;
     price: anchor.BN;
     max_claims: anchor.BN;
-    proof: Buffer[];
+    proof: number[][];
   }[];
 }
 
@@ -41,5 +41,5 @@ export interface PhaseConfig {
   endTime: anchor.BN;
   priceToken: PublicKey;
   isPrivate: boolean;
-  merkleRoot: Buffer | null;
+  merkleRoot: number[] | null;
 }
