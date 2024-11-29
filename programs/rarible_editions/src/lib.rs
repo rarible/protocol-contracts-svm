@@ -62,4 +62,14 @@ pub mod rarible_editions {
     ) -> Result<()> {
         metadata::remove::handler(ctx, args)
     }
+
+    /// Process the transfer hook
+    /// @NEW-CODE
+    pub fn process_transfer(
+        ctx: Context<TransferHookContext>,
+        amount: u64,
+    ) -> Result<()> {
+        instructions::royalties::transfer_hook::process_transfer_hook(ctx, amount)
+    }
+    // @NEW-CODE-END
 }

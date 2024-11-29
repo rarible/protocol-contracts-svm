@@ -7,7 +7,7 @@ use solana_program::{
 };
 
 use spl_token_2022::{
-    extension::{group_pointer::GroupPointer, transfer_fee::TransferFeeConfig, ExtensionType},
+    extension::{group_pointer::GroupPointer, transfer_fee::TransferFeeConfig, ExtensionType, transfer_hook, transfer_hook::TransferHook},
     instruction::initialize_mint2,
     state::Mint,
 };
@@ -57,19 +57,28 @@ pub fn create_token_2022_and_metadata<'a>(
 ) -> Result<()> {
     // msg!("create_token_2022_and_metadata called");
     let MintAccounts2022 {
+        authority,
         payer,
+        nft_owner,
         nft_mint,
         spl_token_program,
-        nft_owner,
-        authority,
-        ..
     } = accounts;
+
+    // Clone nft_mint at the start since it's used multiple times
+    let nft_mint_info = nft_mint.to_account_info().clone();
+    let nft_mint_key = nft_mint_info.key();
 
     let rent = Rent::get()?;
 
     let mut extension_types = vec![];
-
     let mut extension_extra_space: usize = 0;
+
+    // Add TransferHook extension type and space
+    // @TBD: only add if royalties are set
+    // @NEW-CODE
+    extension_types.push(ExtensionType::TransferHook);
+    extension_extra_space += std::mem::size_of::<TransferHook>();
+    // @NEW-CODE-END
 
     match &token_metadata {
         Some(x) => {
@@ -444,6 +453,38 @@ pub fn create_token_2022_and_metadata<'a>(
         }
     }
 
+    // Initialize transfer hook extension
+    // @TBD: only add if royalties are set
+    // @NEW-CODE
+    let initialize_transfer_hook = spl_token_2022::extension::transfer_hook::instruction::initialize(
+        &spl_token_2022::ID,
+        &nft_mint_key,
+        Some(authority.key()),
+        Some(crate::id()),
+    )?;
+
+    match &auth_seeds {
+        Some(seeds) => {
+            invoke_signed(
+                &initialize_transfer_hook,
+                &[
+                    nft_mint_info.clone(),
+                    authority.to_account_info(),
+                ],
+                &[seeds],
+            )?;
+        }
+        None => {
+            invoke(
+                &initialize_transfer_hook,
+                &[
+                    nft_mint_info.clone(),
+                    authority.to_account_info(),
+                ],
+            )?;
+        }
+    }
+    // @NEW-CODE-END
     msg!("Finished");
     Ok(())
 }

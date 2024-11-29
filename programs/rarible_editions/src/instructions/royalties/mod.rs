@@ -14,6 +14,8 @@ pub struct UpdateRoyaltiesArgs {
 
 pub mod add;
 pub mod modify;
+pub mod transfer_hook;
 
 pub use add::*;
 pub use modify::*;
+pub use transfer_hook::*;

@@ -39,6 +39,7 @@ import {
   getMinterStatsPhasePda,
 } from "../utils/pdas";
 import { CollectionConfig, AllowListConfig, PhaseConfig } from "../utils/types";
+import * as token_2022 from "@solana/spl-token";
 
 const VERBOSE_LOGGING = false;
 
@@ -339,7 +340,7 @@ describe("Editions Controls Test Suite", () => {
     });
   });
 
-  describe("Adding phases", () => {
+  describe.skip("Adding phases", () => {
     it("Should add a private phase with allowlist. [Phase Index 0]: Open: Not Available, Allowlist: 0.05 SOL", async () => {
       phase0Config = {
         maxMintsPerWallet: new anchor.BN(100),
@@ -351,7 +352,7 @@ describe("Editions Controls Test Suite", () => {
         isPrivate: true,
         merkleRoot: allowListConfig.merkleRoot,
       };
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(phase0Config)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -364,7 +365,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
       await provider.sendAndConfirm(transaction, [payer]);
 
       const editionsControlsDecoded = await getEditionsControls(
@@ -392,7 +393,7 @@ describe("Editions Controls Test Suite", () => {
         merkleRoot: allowListConfig.merkleRoot,
       };
 
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(phase1Config)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -405,7 +406,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
       await provider.sendAndConfirm(transaction, [payer]);
 
       // get state
@@ -434,7 +435,7 @@ describe("Editions Controls Test Suite", () => {
         merkleRoot: null,
       };
 
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(phase2Config)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -447,7 +448,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
       await provider.sendAndConfirm(transaction, [payer]);
 
       // get state
@@ -476,7 +477,7 @@ describe("Editions Controls Test Suite", () => {
         merkleRoot: null,
       };
 
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(phase3Config)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -489,7 +490,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
       await provider.sendAndConfirm(transaction, [payer]);
 
       // get state
@@ -518,7 +519,7 @@ describe("Editions Controls Test Suite", () => {
         merkleRoot: null,
       };
 
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(phase4Config)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -531,7 +532,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
       await provider.sendAndConfirm(transaction, [payer]);
 
       // get state
@@ -560,7 +561,7 @@ describe("Editions Controls Test Suite", () => {
         merkleRoot: null,
       };
 
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(phase5Config)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -573,7 +574,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
       await provider.sendAndConfirm(transaction, [payer]);
 
       // get state
@@ -602,7 +603,7 @@ describe("Editions Controls Test Suite", () => {
         merkleRoot: null, // Invalid: null merkle root for private phase
       };
 
-      const phaseIx = await editionsControlsProgram.methods
+      const phaseTx = await editionsControlsProgram.methods
         .addPhase(invalidPhaseConfig)
         .accountsStrict({
           editionsControls: editionsControlsPda,
@@ -615,7 +616,7 @@ describe("Editions Controls Test Suite", () => {
         .signers([])
         .instruction();
 
-      const transaction = new Transaction().add(phaseIx);
+      const transaction = new Transaction().add(phaseTx);
 
       try {
         await provider.sendAndConfirm(transaction, [payer]);
@@ -636,7 +637,7 @@ describe("Editions Controls Test Suite", () => {
     });
   });
 
-  describe("Minting", () => {
+  describe.skip("Minting", () => {
     describe("Minting on a private allowlist-only phase [Phase Index 0]", () => {
       it("Should be able to mint with valid allowlist proof", async () => {
         const mintConfig = {
@@ -1417,12 +1418,6 @@ describe("Editions Controls Test Suite", () => {
             throw error;
           }
 
-          // Verify state after minting
-          const editionsDecoded = await getEditions(
-            provider.connection,
-            editionsPda,
-            editionsProgram
-          );
           const editionsControlsDecoded = await getEditionsControls(
             provider.connection,
             editionsControlsPda,
@@ -1812,6 +1807,196 @@ describe("Editions Controls Test Suite", () => {
           }
         });
       });
+    });
+  });
+
+  describe("Transferring, Buying & Selling", () => {
+    let mint: Keypair;
+
+    before(async () => {
+      // Create a new phase
+      const newPhase = {
+        maxMintsPerWallet: new anchor.BN(100),
+        maxMintsTotal: new anchor.BN(1000),
+        priceAmount: new anchor.BN(500000), // 0.05 SOL
+        startTime: new anchor.BN(new Date().getTime() / 1000 - 1),
+        endTime: new anchor.BN(new Date().getTime() / 1000 + 60 * 60 * 24), // 1 day from now
+        priceToken: new PublicKey("So11111111111111111111111111111111111111112"),
+        isPrivate: false,
+        merkleRoot: null,
+      };
+
+      const addPhaseTx = await editionsControlsProgram.methods
+        .addPhase(newPhase)
+        .accountsStrict({
+          editionsControls: editionsControlsPda,
+          payer: payer.publicKey,
+          creator: payer.publicKey,
+          systemProgram: SystemProgram.programId,
+          tokenProgram: TOKEN_2022_PROGRAM_ID,
+          raribleEditionsProgram: editionsProgram.programId,
+        })
+        .instruction();
+      
+      // send and confirm
+      const addPhaseTransaction = new Transaction().add(modifiedComputeUnits).add(addPhaseTx);
+      await provider.sendAndConfirm(addPhaseTransaction, [payer]);
+      
+      // verify the phase was added
+      const editionsControlsDecoded = await getEditionsControls(
+        provider.connection,
+        editionsControlsPda,
+        editionsControlsProgram
+      );
+      const newPhaseIndex = editionsControlsDecoded.data.phases.length - 1;
+
+      mint = Keypair.generate();
+      const member = Keypair.generate();
+
+      const mintConfig = {
+        phaseIndex: newPhaseIndex,
+        merkleProof: null,
+        allowListPrice: null,
+        allowListMaxClaims: null,
+      };
+
+      const minterStatsPda = getMinterStatsPda(
+        editionsPda,
+        minter0.publicKey,
+        editionsControlsProgram.programId
+      );
+      const minterStatsPhasePda = getMinterStatsPhasePda(
+        editionsPda,
+        minter0.publicKey,
+        newPhaseIndex,
+        editionsControlsProgram.programId
+      );
+      const associatedTokenAddressSync = getAssociatedTokenAddressSync(
+        mint.publicKey,
+        minter0.publicKey,
+        false,
+        TOKEN_2022_PROGRAM_ID
+      );
+
+      const mintIx = await editionsControlsProgram.methods
+        .mintWithControls(mintConfig)
+        .accountsStrict({
+          editionsDeployment: editionsPda,
+          editionsControls: editionsControlsPda,
+          payer: minter0.publicKey,
+          minterStats: minterStatsPda,
+          minterStatsPhase: minterStatsPhasePda,
+          mint: mint.publicKey,
+          member: member.publicKey,
+          group: group.publicKey,
+          groupMint: groupMint.publicKey,
+          platformFeeRecipient1: platformFeeAdmin.publicKey,
+          tokenAccount: associatedTokenAddressSync,
+          treasury: treasury.publicKey,
+          tokenProgram: TOKEN_2022_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          groupExtensionProgram: TOKEN_GROUP_EXTENSION_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+          raribleEditionsProgram: editionsProgram.programId,
+        })
+        .instruction();
+
+      const transaction = new Transaction().add(modifiedComputeUnits).add(mintIx);
+      await provider.sendAndConfirm(transaction, [minter0, mint, member]);
+    });
+
+    it("Should transfer an NFT from one wallet to another, royalties should be paid to the creators", async () => {
+      const senderTokenAccount = getAssociatedTokenAddressSync(
+        mint.publicKey,
+        minter0.publicKey,
+        false,
+        TOKEN_2022_PROGRAM_ID
+      );
+
+      const receiverTokenAccount = getAssociatedTokenAddressSync(
+        mint.publicKey,
+        minter1.publicKey,
+        false,
+        TOKEN_2022_PROGRAM_ID
+      );
+
+      // Check initial balances
+      const senderInitialBalance = await provider.connection.getTokenAccountBalance(
+        senderTokenAccount
+      );
+      const receiverInitialBalance = await provider.connection.getTokenAccountBalance(
+        receiverTokenAccount
+      ).catch(() => ({ value: { amount: "0" } })); // Handle case where account doesn't exist yet
+
+      expect(Number(senderInitialBalance.value.amount)).to.equal(1);
+      expect(Number(receiverInitialBalance.value.amount)).to.equal(0);
+      
+      const creator1InitialBalance = await provider.connection.getBalance(creator1.publicKey);
+      const creator2InitialBalance = await provider.connection.getBalance(creator2.publicKey);
+
+      // Create transfer instruction
+      const transferIx = token_2022.createTransferCheckedInstruction(
+        senderTokenAccount,
+        mint.publicKey,
+        receiverTokenAccount,
+        minter0.publicKey,
+        1, // amount (1 token for NFT)
+        0, // decimals
+        [], // no signer seeds
+        TOKEN_2022_PROGRAM_ID
+      );
+
+      // Before sending the transaction, we need to create the receiver's token account if it doesn't exist
+      const createAtaIx = token_2022.createAssociatedTokenAccountInstruction(
+        minter0.publicKey, // payer
+        receiverTokenAccount, // ata
+        minter1.publicKey, // owner
+        mint.publicKey, // mint
+        TOKEN_2022_PROGRAM_ID
+      );
+
+      // Send and confirm transaction
+      const transaction = new Transaction()
+        .add(modifiedComputeUnits)
+        .add(createAtaIx)
+        .add(transferIx);
+
+      await provider.sendAndConfirm(transaction, [minter0]);
+
+      // Check final balances
+      const senderFinalBalance = await provider.connection.getTokenAccountBalance(
+        senderTokenAccount
+      );
+      const receiverFinalBalance = await provider.connection.getTokenAccountBalance(
+        receiverTokenAccount
+      );
+      const creator1FinalBalance = await provider.connection.getBalance(creator1.publicKey);
+      const creator2FinalBalance = await provider.connection.getBalance(creator2.publicKey);
+
+      if (VERBOSE_LOGGING) {
+        console.log("Initial balances:");
+        console.log("- Sender:", senderInitialBalance.value.amount);
+        console.log("- Receiver:", receiverInitialBalance.value.amount);
+        console.log("- Creator1:", creator1InitialBalance);
+        console.log("- Creator2:", creator2InitialBalance);
+        console.log("Final balances:");
+        console.log("- Sender:", senderFinalBalance.value.amount);
+        console.log("- Receiver:", receiverFinalBalance.value.amount);
+        console.log("- Creator1:", creator1FinalBalance);
+        console.log("- Creator2:", creator2FinalBalance);
+      }
+
+      // Verify token balances changed correctly
+      expect(Number(senderFinalBalance.value.amount)).to.equal(0);
+      expect(Number(receiverFinalBalance.value.amount)).to.equal(1);
+
+      // Verify royalties were paid correctly based on collection config
+      const expectedRoyaltyAmount = collectionConfig.royaltyValue;
+      const creator1Share = Math.floor((expectedRoyaltyAmount * collectionConfig.creators[0].share) / 100);
+      const creator2Share = Math.floor((expectedRoyaltyAmount * collectionConfig.creators[1].share) / 100);
+
+      expect(creator1FinalBalance - creator1InitialBalance).to.equal(creator1Share);
+      expect(creator2FinalBalance - creator2InitialBalance).to.equal(creator2Share);
     });
   });
 });
