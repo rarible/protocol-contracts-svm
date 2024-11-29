@@ -323,7 +323,68 @@ impl<'info> FillOrder<'info> {
         }
         Ok(())
     }
+
+    #[inline(never)]
+    fn transfer_royalties(
+        &self,
+        signer_seeds: &[&[&[u8]]],
+        is_buy: bool,
+        royalties_accounts: Vec<AccountInfo<'info>>,
+        royalty_amounts: Vec<u64>,
+        creators_info: Vec<(Pubkey, u64)>,
+    ) -> Result<()> {
+        let authority = if is_buy {
+            self.order.to_account_info()
+        } else {
+            self.taker.to_account_info()
+        };
+
+        for (i, accounts) in royalties_accounts.chunks(2).enumerate() {
+            let amount = royalty_amounts[i];
+            if accounts.len() == 2 {
+                let rec_pubkey = &accounts[0];
+                let rec_ta = &accounts[1];
+
+                // Verify that the recipient's public key matches the creator's public key
+                if rec_pubkey.key() != creators_info[i].0 {
+                    return Err(MarketError::InvalidRoyaltiesAccount.into());
+                }
+
+                create_ata(
+                    &rec_ta.to_account_info(),
+                    &self.taker.to_account_info(),
+                    &self.payment_mint.to_account_info(),
+                    &rec_pubkey.to_account_info(),
+                    &self.system_program.to_account_info(),
+                    &self.payment_token_program.to_account_info(),
+                )?;
+
+                let ctx = TransferChecked {
+                    from: self.buyer_payment_ta.to_account_info(),
+                    to: rec_ta.to_account_info(),
+                    authority: authority.clone(),
+                    mint: self.payment_mint.to_account_info(),
+                };
+
+                let cpi = if is_buy {
+                    CpiContext::new_with_signer(
+                        self.payment_token_program.to_account_info(),
+                        ctx,
+                        signer_seeds,
+                    )
+                } else {
+                    CpiContext::new(self.payment_token_program.to_account_info(), ctx)
+                };
+
+                transfer_checked(cpi, amount, self.payment_mint.decimals)?;
+            }
+        }
+
+        Ok(())
+    }
+
 }
+
 
 /// Initializer is the buyer and is buying an nft from the seller
 /// The seller is the owner of the order account
@@ -494,6 +555,79 @@ pub fn handler<'info>(
             // Handles royalties
             ctx.accounts
                 .approve_wns_transfer(signer_seeds, buy_value, is_buy, wns_accounts)?;
+        } else {
+            let mint_metadata = get_mint_metadata(&mut ctx.accounts.nft_mint.to_account_info())?;
+            let royalty_basis_points = mint_metadata
+                .additional_metadata
+                .iter()
+                .find(|(key, _)| key == ROYALTY_BASIS_POINTS_FIELD)
+                .map(|(_, value)| value)
+                .map(|value| u64::from_str(value).unwrap())
+                .unwrap_or(0);
+
+            let royalties = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
+            if royalties > 0 {
+                for (key, value) in creators_additional_metadata {
+                    match Pubkey::from_str(key) {
+                        Ok(parsed_key) => {
+                            match u64::from_str(value) {
+                                Ok(percentage) => {
+                                    if percentage > 100 {
+                                        return Err(MarketError::InvalidRoyaltyPercentage.into());
+                                    }
+                                    total_percentage += percentage;
+                                    if total_percentage > 100 {
+                                        return Err(MarketError::TotalRoyaltyPercentageExceeded.into());
+                                    }
+                                    creators_info.push((parsed_key, percentage));
+                                }
+                                Err(_) => {
+                                    // Value is not a valid u64, skip or handle accordingly
+                                    msg!("royalties::handler::invalid_value_not_a_u64: {}", value);
+                                    return Err(MarketError::InvalidRoyaltyPercentage.into());
+                                }
+                            }
+                        }
+                        Err(_) => {
+                            // Key is not a valid Pubkey, remove it or handle accordingly
+                            msg!("royalties::handler::invalid_key_not_a_pubkey: {}", key);
+                            return Err(MarketError::InvalidRoyaltyAccount.into());
+                        }
+                    }
+                }
+                
+                // Check if there are enough remaining accounts for creators
+                let num_creator_accounts = creators_info.len() * 2;
+                if token22_ra.len() < num_creator_accounts {
+                    return Err(MarketError::NotEnoughRemainingAccounts.into());
+                }
+                
+                let (royalties_accounts, token22_ra_rest) = token22_ra.split_at(num_creator_accounts);
+                token22_ra = token22_ra_rest;
+                
+                // Compute royalty amounts for each creator
+                let mut royalty_amounts: Vec<u64> = Vec::new();
+                for (_, percentage) in &creators_info {
+                    let amount = royalties
+                        .checked_mul(*percentage)
+                        .unwrap()
+                        .checked_div(100)
+                        .unwrap();
+                    royalty_amounts.push(amount);
+                }
+                
+                // Adjust seller received amount
+                seller_received_amount = seller_received_amount.checked_sub(royalties).unwrap();
+                
+                // Transfer royalties to creators
+                ctx.accounts.transfer_royalties(
+                    signer_seeds,
+                    is_buy,
+                    royalties_accounts.to_vec(),
+                    royalty_amounts,
+                    creators_info,
+                )?;
+            } 
         }
         // Any remaining accounts left are for potential transfer hook (Empty if not expecting hook)
         ctx.accounts
