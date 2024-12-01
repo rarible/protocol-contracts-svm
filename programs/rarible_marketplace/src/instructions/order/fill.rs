@@ -18,9 +18,7 @@ use crate::{
     errors::MarketError,
     state::*,
     utils::{
-        create_ata, get_amount_from_bp, get_bump_in_seed_form, get_fee_amount, invoke_unwrap_sol,
-        invoke_wrap_sol, token_extensions::WnsApprovalAccounts, verify_wns_mint, UnwrapSolAccounts,
-        WrapSolAccounts, WSOL_MINT,
+        create_ata, get_amount_from_bp, get_bump_in_seed_form, get_fee_amount, invoke_unwrap_sol, invoke_wrap_sol, lamport_transfer, token_extensions::WnsApprovalAccounts, verify_wns_mint, UnwrapSolAccounts, WrapSolAccounts, WSOL_MINT
     },
 };
 
@@ -83,29 +81,39 @@ pub struct FillOrder<'info> {
 impl<'info> FillOrder<'info> {
     #[inline(never)]
     fn transfer_payment(&self, signer_seeds: &[&[&[u8]]], is_buy: bool, amount: u64) -> Result<()> {
-        let cpi_ctx = if is_buy {
-            CpiContext::new_with_signer(
-                self.payment_token_program.to_account_info(),
-                TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: self.seller_payment_ta.to_account_info(),
-                    authority: self.order.to_account_info(),
-                    mint: self.payment_mint.to_account_info(),
-                },
-                signer_seeds,
-            )
+        if self.payment_mint.key() == WSOL_MINT && !is_buy{
+            // if its wsol and a listing, then we need to unwrap and lamport transfer instead of the spl transfer
+            invoke_unwrap_sol(&UnwrapSolAccounts {
+                user: self.taker.to_account_info(),
+                user_ta: self.buyer_payment_ta.to_account_info(),
+                token_program: self.payment_token_program.to_account_info(),
+            })?;
+            lamport_transfer(self.taker.to_account_info(), self.maker.to_account_info(), amount)
         } else {
-            CpiContext::new(
-                self.payment_token_program.to_account_info(),
-                TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: self.seller_payment_ta.to_account_info(),
-                    authority: self.taker.to_account_info(),
-                    mint: self.payment_mint.to_account_info(),
-                },
-            )
-        };
-        transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+            let cpi_ctx = if is_buy {
+                CpiContext::new_with_signer(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.seller_payment_ta.to_account_info(),
+                        authority: self.order.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                    signer_seeds,
+                )
+            } else {
+                CpiContext::new(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.seller_payment_ta.to_account_info(),
+                        authority: self.taker.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                )
+            };
+            transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+        }
     }
 
     /*
@@ -507,15 +515,16 @@ pub fn handler<'info>(
         return Err(MarketError::UnsupportedNft.into());
     }
 
-    // Transfer payment
-    ctx.accounts
-        .transfer_payment(signer_seeds, is_buy, seller_received_amount)?;
     ctx.accounts.transfer_fee(
         signer_seeds,
         fee_accounts.to_vec(),
         is_buy,
         fee_amounts.to_vec(),
     )?;
+
+    // Transfer payment
+    ctx.accounts
+        .transfer_payment(signer_seeds, is_buy, seller_received_amount)?;
 
     ctx.accounts.unwrap_sol_if_needed(is_buy)?;
 
