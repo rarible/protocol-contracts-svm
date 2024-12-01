@@ -78,34 +78,109 @@ pub struct FillOrder<'info> {
     #[account(address = sysvar::instructions::id())]
     pub sysvar_instructions: UncheckedAccount<'info>,
     pub associated_token_program: Program<'info, AssociatedToken>,
+
+    #[account(mut)]
+    pub temp_wsol_account: Signer<'info>, 
 }
 
 impl<'info> FillOrder<'info> {
     #[inline(never)]
     fn transfer_payment(&self, signer_seeds: &[&[&[u8]]], is_buy: bool, amount: u64) -> Result<()> {
-        let cpi_ctx = if is_buy {
-            CpiContext::new_with_signer(
-                self.payment_token_program.to_account_info(),
-                TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: self.seller_payment_ta.to_account_info(),
-                    authority: self.order.to_account_info(),
-                    mint: self.payment_mint.to_account_info(),
-                },
-                signer_seeds,
-            )
+        if self.payment_mint.key() == WSOL_MINT {
+            
+            if **self.temp_wsol_account.lamports.borrow() > 0 {
+                return Err(MarketError::TempWsolAccountAlreadyExists.into());
+            }
+            // Implement the unwrap trick for wSOL
+            // Create temporary wSOL token account
+            let temp_wsol_account = &self.temp_wsol_account;
+
+            // Create the temporary wSOL token account
+            create_ata(
+                temp_wsol_account,
+                &self.taker.to_account_info(),
+                &self.payment_mint.to_account_info(),
+                &self.order.to_account_info(),
+                &self.system_program.to_account_info(),
+                &self.payment_token_program.to_account_info(),
+            )?;
+
+            // Transfer amount from buyer_payment_ta to temp_wsol_account
+            let cpi_ctx = if is_buy {
+                // Authority is order PDA
+                CpiContext::new_with_signer(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: temp_wsol_account.to_account_info(),
+                        authority: self.order.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                    signer_seeds,
+                )
+            } else {
+                CpiContext::new(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: temp_wsol_account.to_account_info(),
+                        authority: self.taker.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                )
+            };
+            transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)?;
+
+            // Close temp_wsol_account into recipient (seller)
+            let close_cpi_ctx = if is_buy {
+                CpiContext::new_with_signer(
+                    self.payment_token_program.to_account_info(),
+                    anchor_spl::token_interface::CloseAccount {
+                        account: temp_wsol_account.to_account_info(),
+                        destination: self.seller_payment_ta.to_account_info(),
+                        authority: self.order.to_account_info(),
+                    },
+                    signer_seeds,
+                )
+            } else {
+                CpiContext::new(
+                    self.payment_token_program.to_account_info(),
+                    anchor_spl::token_interface::CloseAccount {
+                        account: temp_wsol_account.to_account_info(),
+                        destination: self.seller_payment_ta.to_account_info(),
+                        authority: self.taker.to_account_info(),
+                    },
+                )
+            };
+            anchor_spl::token_interface::close_account(close_cpi_ctx)?;
+
+            Ok(())
         } else {
-            CpiContext::new(
-                self.payment_token_program.to_account_info(),
-                TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: self.seller_payment_ta.to_account_info(),
-                    authority: self.taker.to_account_info(),
-                    mint: self.payment_mint.to_account_info(),
-                },
-            )
-        };
-        transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+            // Original transfer logic for other tokens
+            let cpi_ctx = if is_buy {
+                CpiContext::new_with_signer(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.seller_payment_ta.to_account_info(),
+                        authority: self.order.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                    signer_seeds,
+                )
+            } else {
+                CpiContext::new(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.seller_payment_ta.to_account_info(),
+                        authority: self.taker.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                )
+            };
+            transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+        }
     }
 
     /*

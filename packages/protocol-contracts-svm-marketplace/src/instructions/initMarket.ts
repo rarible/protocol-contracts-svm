@@ -25,8 +25,8 @@ export const initMarket = async ({
 
   const instruction = await marketProgram.methods
     .initMarket({
-      feeBps: new BN(params.feeBps),
-      feeRecipient: new PublicKey(params.feeRecipient),
+      feeBps: [new BN(params.feeBps)],
+      feeRecipients: [new PublicKey(params.feeRecipient)],
     })
     .accountsStrict({
       initializer: wallet.publicKey,

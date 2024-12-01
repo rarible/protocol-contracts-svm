@@ -13,3 +13,6 @@ npx ts-node ./src/cli/listNft.ts \
 
   # Order Account: F3GQTWUBM11RFb4HbDhtt21b8xHGqRc5UzqufRk8rRyY
   # order 2: EZz8BGwsN1j4FP172R5sprpXui3AQkeDtX4DoCeG5Ccb
+
+
+  # dev net sol 2YHKx3tAGhvZ7fjMx1NeWtqCnBphRF1YsKeoFurJJ9U1

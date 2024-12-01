@@ -107,10 +107,10 @@ import {
       nftTokenProgram.toBase58()
     );
   
-    const feeRecipient = market.feeRecipient;
+    const feeRecipients = market.feeRecipients;
     const feeRecipientTa = getAtaAddress(
       order.paymentMint.toBase58(),
-      feeRecipient.toBase58(),
+      feeRecipients[0].toBase58(),
       paymentTokenProgram.toBase58()
     );
   
@@ -145,7 +145,7 @@ import {
     console.log("Payment Mint:", order.paymentMint.toBase58());
     console.log("NFT Mint:", nftMint.toBase58());
     console.log("Event Authority:", eventAuthority.toBase58());
-    console.log("Fee Recipient:", feeRecipient.toBase58());
+    console.log("Fee Recipient:", feeRecipients[0].toBase58());
     console.log("Fee Recipient Token Account:", feeRecipientTa.toBase58());
     console.log(
       "SYSVAR Instructions Pubkey:",
@@ -181,8 +181,7 @@ import {
         paymentMint: order.paymentMint,
         nftMint,
         sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
-        feeRecipient,
-        feeRecipientTa,
+        tempWsolAccount: ""
       })
       .remainingAccounts(remainingAccounts)
       .instruction();
