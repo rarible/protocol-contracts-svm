@@ -350,7 +350,7 @@ impl<'info> FillOrder<'info> {
                             self.system_program.to_account_info(),
                             system_program::Transfer {
                                 from: self.taker.to_account_info(),
-                                to: rec_ta.to_account_info(),
+                                to: rec_pubkey.to_account_info(),
                             },
                         ),
                         amount,
