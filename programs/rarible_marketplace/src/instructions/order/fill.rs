@@ -316,6 +316,8 @@ impl<'info> FillOrder<'info> {
         royalty_amounts: Vec<u64>,
         creators_info: Vec<(Pubkey, u64)>,
     ) -> Result<()> {
+        msg!("royalties::transfer_royalties::starting");
+
         let authority = if is_buy {
             self.order.to_account_info()
         } else {
@@ -324,12 +326,22 @@ impl<'info> FillOrder<'info> {
 
         for (i, accounts) in royalties_accounts.chunks(2).enumerate() {
             let amount = royalty_amounts[i];
+            msg!("royalties::transfer_royalties::transfer_to_creator[{}], amount: {}", i, amount);
+
             if accounts.len() == 2 {
                 let rec_pubkey = &accounts[0];
                 let rec_ta = &accounts[1];
 
+                msg!("royalties::transfer_royalties::recipient_pubkey: {}", rec_pubkey.key());
+                msg!("royalties::transfer_royalties::recipient_ta: {}", rec_ta.key());
+
                 // Verify that the recipient's public key matches the creator's public key
                 if rec_pubkey.key() != creators_info[i].0 {
+                    msg!(
+                        "royalties::transfer_royalties::recipient_pubkey_mismatch, expected: {}, found: {}",
+                        creators_info[i].0,
+                        rec_pubkey.key()
+                    );
                     return Err(MarketError::InvalidRoyaltiesAccount.into());
                 }
                 if self.payment_mint.key() == WSOL_MINT && !is_buy {
@@ -373,6 +385,10 @@ impl<'info> FillOrder<'info> {
                     transfer_checked(cpi, amount, self.payment_mint.decimals)?;
                 }
 
+                msg!("royalties::transfer_royalties::transfer_successful_to_creator[{}]", i);
+
+            } else {
+                msg!("royalties::transfer_royalties::not_enough_accounts_for_creator[{}], accounts_len: {}", i, accounts.len());
             }
         }
 
@@ -491,8 +507,6 @@ pub fn handler<'info>(
         &payment_token_program,
     )?;
 
-    //ctx.accounts.wrap_sol_if_needed(buy_value, is_buy)?;
-
     // Transfer NFT
     if *nft_token_program_key == TOKEN_PID {
         // Check if its metaplex or not
@@ -538,6 +552,8 @@ pub fn handler<'info>(
                 .map(|value| u64::from_str(value).unwrap())
                 .unwrap_or(0);
 
+            msg!("royalties::handler::royalty_basis_points: {}", royalty_basis_points);
+
             let royalties = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
             seller_received_amount = seller_received_amount.checked_sub(royalties).unwrap();
 
@@ -554,10 +570,14 @@ pub fn handler<'info>(
                 .map(|value| u64::from_str(value).unwrap())
                 .unwrap_or(0);
 
-            let royalties_amount = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
+            msg!("royalties::handler::royalty_basis_points: {}", royalty_basis_points);
 
+            let royalties_amount = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
+            msg!("royalties::handler::royalties_amount: {}", royalties_amount);
 
             if royalties_amount > 0 {
+
+                msg!("royalties::handler::parsing_creators");
 
                 let creators_additional_metadata: Vec<&(String, String)> = mint_metadata
                     .additional_metadata
@@ -572,12 +592,15 @@ pub fn handler<'info>(
                             match u64::from_str(value) {
                                 Ok(percentage) => {
                                     if percentage > 100 {
+                                        msg!("royalties::handler::percentage_over_100: {}", percentage);
                                         return Err(MarketError::InvalidRoyaltyPercentage.into());
                                     }
                                     total_percentage += percentage;
                                     if total_percentage > 100 {
+                                        msg!("royalties::handler::total_percentage_exceeded: {}", total_percentage);
                                         return Err(MarketError::TotalRoyaltyPercentageExceeded.into());
                                     }
+                                    msg!("royalties::handler::creator pubkey: {}, percentage: {}", parsed_key, percentage);
                                     creators_info.push((parsed_key, percentage));
                                 }
                                 Err(_) => {
@@ -593,10 +616,17 @@ pub fn handler<'info>(
                         }
                     }
                 }
+
+                msg!("royalties::handler::total_royalty_percentage: {}", total_percentage);
                 
                 // Check if there are enough remaining accounts for creators
                 let num_creator_accounts = creators_info.len() * 2;
                 if token22_ra.len() < num_creator_accounts {
+                    msg!(
+                        "royalties::handler::not_enough_remaining_accounts, required: {}, provided: {}",
+                        num_creator_accounts,
+                        token22_ra.len()
+                    );
                     return Err(MarketError::NotEnoughRemainingAccounts.into());
                 }
                 
@@ -644,7 +674,6 @@ pub fn handler<'info>(
     // Transfer payment
     ctx.accounts
         .transfer_payment(signer_seeds, is_buy, seller_received_amount)?;
-
 
     ctx.accounts.unwrap_sol_if_needed(is_buy)?;
 
