@@ -18,5 +18,5 @@ npx ts-node ./src/cli/fillOrder.ts \
 npx ts-node ./src/cli/fillOrder.ts \
   -k ~/.config/solana/id-buyer.json \
   -r https://api.devnet.solana.com \
-  -o HoihBYxVBUpvo8pRusxdYGE1Ch72dguzsXAfNNZZXRkr \
+  -o 545Ur32JXmBbvrhEoEVCvdiHTPXZxHvnpdVb4uXW82wy \
   --amountToFill 1
