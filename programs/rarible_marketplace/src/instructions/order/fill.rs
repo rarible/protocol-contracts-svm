@@ -575,7 +575,7 @@ pub fn handler<'info>(
             let royalties_amount = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
             msg!("royalties::handler::royalties_amount: {}", royalties_amount);
 
-            if royalties_amount > 0 {
+            if royalties_amount > 0 && remaining_accounts.len() > 1 {
 
                 msg!("royalties::handler::parsing_creators");
 
