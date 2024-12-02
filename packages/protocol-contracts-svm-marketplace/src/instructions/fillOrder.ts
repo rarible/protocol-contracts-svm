@@ -219,7 +219,7 @@ export const fillOrder = async ({
       remainingAccounts.push({
         pubkey: creatorInfo.pubkey,
         isSigner: false,
-        isWritable: false,
+        isWritable: true,
       });
 
       // Get the creator's payment ATA
