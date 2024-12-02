@@ -36,6 +36,7 @@ pub enum MarketState {
 #[repr(u8)]
 pub enum MarketEditType {
     Init,
+    Modify,
 }
 
 #[account()]
