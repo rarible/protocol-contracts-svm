@@ -89,32 +89,18 @@ pub struct FillOrder<'info> {
 impl<'info> FillOrder<'info> {
     #[inline(never)]
     fn transfer_payment(&self, signer_seeds: &[&[&[u8]]], is_buy: bool, amount: u64) -> Result<()> {
-        if self.payment_mint.key() == WSOL_MINT {
-            if is_buy {
-                let cpi_ctx = CpiContext::new_with_signer(
-                    self.payment_token_program.to_account_info(),
-                    TransferChecked {
-                        from: self.buyer_payment_ta.to_account_info(),
-                        to: self.seller_payment_ta.to_account_info(),
-                        authority: self.order.to_account_info(),
-                        mint: self.payment_mint.to_account_info(),
+        if self.payment_mint.key() == WSOL_MINT && !is_buy {
+            system_program::transfer(
+                CpiContext::new(
+                    self.system_program.to_account_info(),
+                    system_program::Transfer {
+                        from: self.taker.to_account_info(),
+                        to: self.maker.to_account_info(),
                     },
-                    signer_seeds,
-                );
-                transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
-            } else {
-                system_program::transfer(
-                    CpiContext::new(
-                        self.system_program.to_account_info(),
-                        system_program::Transfer {
-                            from: self.taker.to_account_info(),
-                            to: self.maker.to_account_info(),
-                        },
-                    ),
-                    amount,
-                )?;
-                Ok(())
-            }
+                ),
+                amount,
+            )?;
+            Ok(())
         } else {
             let cpi_ctx = if is_buy {
                 CpiContext::new_with_signer(
@@ -267,32 +253,18 @@ impl<'info> FillOrder<'info> {
 
     #[inline(never)]
     fn transfer_fee(&self, signer_seeds: &[&[&[u8]]], is_buy: bool, amount: u64) -> Result<()> {
-        if self.payment_mint.key() == WSOL_MINT {
-            if is_buy {
-                let cpi_ctx= CpiContext::new_with_signer(
-                    self.payment_token_program.to_account_info(),
-                    TransferChecked {
-                        from: self.buyer_payment_ta.to_account_info(),
-                        to: self.fee_recipient_ta.to_account_info(),
-                        authority: self.order.to_account_info(),
-                        mint: self.payment_mint.to_account_info(),
+        if self.payment_mint.key() == WSOL_MINT && !is_buy {
+            system_program::transfer(
+                CpiContext::new(
+                    self.system_program.to_account_info(),
+                    system_program::Transfer {
+                        from: self.taker.to_account_info(),
+                        to: self.fee_recipient.to_account_info(),
                     },
-                    signer_seeds,
-                );
-                transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
-            } else {
-                system_program::transfer(
-                    CpiContext::new(
-                        self.system_program.to_account_info(),
-                        system_program::Transfer {
-                            from: self.taker.to_account_info(),
-                            to: self.fee_recipient.to_account_info(),
-                        },
-                    ),
-                    amount,
-                )?;
-                Ok(())
-            }
+                ),
+                amount,
+            )?;
+            Ok(())
         } else {
             let cpi_ctx = if is_buy {
                 CpiContext::new_with_signer(
@@ -322,30 +294,10 @@ impl<'info> FillOrder<'info> {
     }
 
     #[inline(never)]
-    fn wrap_sol_if_needed(&self, amount: u64, is_buy: bool) -> Result<()> {
-        if self.payment_mint.key() == WSOL_MINT && !is_buy {
-            invoke_wrap_sol(
-                &WrapSolAccounts {
-                    user: self.taker.to_account_info(),
-                    user_ta: self.buyer_payment_ta.to_account_info(),
-                    token_program: self.payment_token_program.to_account_info(),
-                    wsol_mint: self.payment_mint.to_account_info(),
-                    system_program: self.system_program.to_account_info(),
-                },
-                amount,
-            )?;
-        }
-        Ok(())
-    }
-
-    #[inline(never)]
     fn unwrap_sol_if_needed(&self, is_buy: bool) -> Result<()> {
-        if self.payment_mint.key() == WSOL_MINT {
-            let user_ta = if is_buy {
-                self.seller_payment_ta.to_account_info()
-            } else {
-                self.buyer_payment_ta.to_account_info()
-            };
+        if self.payment_mint.key() == WSOL_MINT && is_buy {
+            let user_ta = self.seller_payment_ta.to_account_info();
+            
             invoke_unwrap_sol(&UnwrapSolAccounts {
                 user: self.taker.to_account_info(),
                 user_ta,
@@ -466,7 +418,7 @@ pub fn handler<'info>(
         &payment_token_program,
     )?;
 
-    ctx.accounts.wrap_sol_if_needed(buy_value, is_buy)?;
+    //ctx.accounts.wrap_sol_if_needed(buy_value, is_buy)?;
 
     // Transfer NFT
     if *nft_token_program_key == TOKEN_PID {

@@ -11,7 +11,7 @@ npx ts-node ./src/cli/initMarket.ts \
 
 npx ts-node ./src/cli/initMarket.ts \
   -k ~/.config/solana/id.json \
-  -r https://testnet.dev2.eclipsenetwork.xyz \
+  -r https://api.devnet.solana.com \
   -m Rarim7DMoD45z1o25QWPsWvTdFSSEdxaxriwWZLLTic \
   --feeBps 500 \
   --feeRecipient AsSKqK7CkxFUf3KaoQzzr8ZLPm5fFguUtVE5QwGALQQn

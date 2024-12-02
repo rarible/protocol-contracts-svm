@@ -55,3 +55,21 @@ npx ts-node ./src/cli/listNft.ts \
 # Returning status { err: null, slot: 343975808, confirmations: 0 }
 # Minting successful.
 # Finished minting
+
+npx ts-node ./src/cli/listNft.ts \
+  -k ~/.config/solana/id.json \
+  -r https://api.devnet.solana.com \
+  -m Rarim7DMoD45z1o25QWPsWvTdFSSEdxaxriwWZLLTic \
+  --nftMint 2cPf2dL8ckHfHJ123YHzUFvgkHk6wjQnPXkoLGLBYntC \
+  --paymentMint So11111111111111111111111111111111111111112 \
+  --size 1 \
+  --price 650000
+
+npx ts-node ./src/cli/listNft.ts \
+  -k ~/.config/solana/id.json \
+  -r https://api.devnet.solana.com \
+  -m Rarim7DMoD45z1o25QWPsWvTdFSSEdxaxriwWZLLTic \
+  --nftMint HzuyYSvbPSdihJ7B4j2npxXBwKTAGWs7Drd34fnpP7Vs \
+  --paymentMint So11111111111111111111111111111111111111112 \
+  --size 1 \
+  --price 1000000000
