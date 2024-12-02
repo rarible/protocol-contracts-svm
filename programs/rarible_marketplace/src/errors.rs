@@ -14,4 +14,12 @@ pub enum MarketError {
     UnsupportedNft,
     #[msg("Invalid NFT for Market")]
     InvalidNft,
+    #[msg("Invalid Royalties Account")]
+    InvalidRoyaltiesAccount,
+    #[msg("Invalid Royalties Percentage")]
+    InvalidRoyaltyPercentage,
+    #[msg("Total Royalty Percentage Exceeded")]
+    TotalRoyaltyPercentageExceeded,
+    #[msg("Not Enough Remaining Accounts")]
+    NotEnoughRemainingAccounts,
 }
