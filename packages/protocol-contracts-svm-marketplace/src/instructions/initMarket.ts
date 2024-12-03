@@ -13,6 +13,7 @@ import {
 } from "@rarible_int/protocol-contracts-svm-core";
 import { InitMarketParams } from "../model";
 import { PROGRAM_ID_MARKETPLACE } from "@rarible_int/protocol-contracts-svm-core";
+import { loadOrCreateKeypair } from "@rarible_int/protocol-contracts-svm-core";
 
 export const initMarket = async ({
   wallet,
@@ -21,6 +22,7 @@ export const initMarket = async ({
 }: IExecutorParams<InitMarketParams>) => {
   const marketProgram = getProgramInstanceRaribleMarketplace(connection);
   const market = getMarketPda(params.marketIdentifier);
+  const keypairMarket = loadOrCreateKeypair(params.marketIdentifier + ".json", "target/deploy")
   const eventAuthority = getEventAuthority();
 
   const instruction = await marketProgram.methods
@@ -36,6 +38,7 @@ export const initMarket = async ({
       program: PROGRAM_ID_MARKETPLACE,
       eventAuthority,
     })
+    .signers([keypairMarket])
     .instruction();
 
   // Create the transaction and add the instruction
@@ -55,10 +58,10 @@ export const initMarket = async ({
   // Set recent blockhash and fee payer
   tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
   tx.feePayer = wallet.publicKey;
-
+  tx.sign(keypairMarket);
   // Sign and send the transaction
   await wallet.signTransaction(tx);
-
+  
   const txid = await sendSignedTransaction({
     signedTransaction: tx,
     connection,

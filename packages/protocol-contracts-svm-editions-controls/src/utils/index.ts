@@ -55,21 +55,3 @@ export const getBase64FromDatabytes = (dataBytes: Buffer, dataType: string) => {
   const base = dataBytes.toString("base64");
   return `data:${dataType};base64,${base}`;
 };
-
-// Load or generate group and groupMint keypairs
-export function loadOrCreateKeypair(fileName: string, deployDirectory: string): Keypair {
-  const filePath = path.join(deployDirectory, fileName);
-  if (fs.existsSync(filePath)) {
-    const secretKeyString = fs.readFileSync(filePath, 'utf-8');
-    const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
-    return Keypair.fromSecretKey(secretKey);
-  } else {
-    const keypair = Keypair.generate();
-    // Ensure the directory exists
-    if (!fs.existsSync(deployDirectory)) {
-      fs.mkdirSync(deployDirectory, { recursive: true });
-    }
-    fs.writeFileSync(filePath, JSON.stringify(Array.from(keypair.secretKey)));
-    return keypair;
-  }
-}

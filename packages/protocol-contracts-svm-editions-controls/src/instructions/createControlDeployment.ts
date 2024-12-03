@@ -10,9 +10,9 @@ import BN from "bn.js";
 
 import { TOKEN_2022_PROGRAM_ID } from "spl-token-4";
 import { getProgramInstanceEditions } from "@rarible_int/protocol-contracts-svm-core";
-import { getEditionsPda, loadOrCreateKeypair } from "../utils";
+import { getEditionsPda } from "../utils";
 import {IExecutorParams} from "@rarible_int/protocol-contracts-svm-core";
-import { sendSignedTransaction } from "@rarible_int/protocol-contracts-svm-core";
+import { sendSignedTransaction, loadOrCreateKeypair } from "@rarible_int/protocol-contracts-svm-core";
 import { getHashlistPda } from  "../utils";
 import { getProgramInstanceEditionsControls } from "@rarible_int/protocol-contracts-svm-core";
 import { getEditionsControlsPda } from "../utils";
