@@ -730,7 +730,8 @@ export type Marketplace = {
           "signer": true
         },
         {
-          "name": "marketIdentifier"
+          "name": "marketIdentifier",
+          "signer": true
         },
         {
           "name": "market",
