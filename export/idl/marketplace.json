@@ -724,7 +724,8 @@
           "signer": true
         },
         {
-          "name": "market_identifier"
+          "name": "market_identifier",
+          "signer": true
         },
         {
           "name": "market",
