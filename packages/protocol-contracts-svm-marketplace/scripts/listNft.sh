@@ -69,7 +69,7 @@ npx ts-node ./src/cli/listNft.ts \
   -k ~/.config/solana/id.json \
   -r https://api.devnet.solana.com \
   -m Rarim7DMoD45z1o25QWPsWvTdFSSEdxaxriwWZLLTic \
-  --nftMint 6MBcywiHJ2KEEKZbYosTDxW9FvEYHBhuNcS9rigAGXyr \
+  --nftMint JTRgY2JXDa1JRqnTWRxyzRpwLTeJfUvP8brVaWmZG7i \
   --paymentMint So11111111111111111111111111111111111111112 \
   --size 1 \
   --price 1000000000

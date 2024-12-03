@@ -431,7 +431,7 @@ pub fn handler<'info>(
 
     let fee_amount = get_fee_amount(buy_value, ctx.accounts.market.fee_bps);
 
-    let mut seller_received_amount = buy_value - fee_amount;
+    let mut seller_received_amount = buy_value;
 
     let is_buy = ctx.accounts.order.side == 0;
     // Verify maker + taker accounts
