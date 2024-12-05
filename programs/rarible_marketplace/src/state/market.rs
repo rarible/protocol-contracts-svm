@@ -84,6 +84,15 @@ impl Market {
         self.fee_bps = fee_bps;
     }
 
+    pub fn modify_fee(
+        &mut self,
+        fee_recipient: Pubkey,
+        fee_bps: u64,
+    ) {
+        self.fee_recipient = fee_recipient;
+        self.fee_bps = fee_bps;
+    }
+
     /// return true if the market is active
     pub fn is_active(state: u8) -> bool {
         state != <MarketState as Into<u8>>::into(MarketState::Closed)

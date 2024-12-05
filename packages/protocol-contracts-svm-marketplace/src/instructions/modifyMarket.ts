@@ -31,7 +31,7 @@ export const modifyMarket = async ({
     .accountsStrict({
       initializer: wallet.publicKey,
       marketIdentifier: params.marketIdentifier,
-      market,
+      market: market.toBase58(),
       systemProgram: SystemProgram.programId,
       program: PROGRAM_ID_MARKETPLACE,
       eventAuthority,

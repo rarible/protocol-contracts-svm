@@ -73,3 +73,14 @@ npx ts-node ./src/cli/listNft.ts \
   --paymentMint So11111111111111111111111111111111111111112 \
   --size 1 \
   --price 1000000000
+
+  6GQA9MbSCFmyUu1SVTzzNJxPkBPQXugJWU3ci7ghJnFL
+
+npx ts-node ./src/cli/listNft.ts \
+  -k ~/.config/solana/prod-keypair.json \
+  -r https://mainnetbeta-rpc.eclipse.xyz \
+  -m Rari4ReeeT8bhbsRGP5J8RBhTFXTAP7iMm7VHuNQTs5 \
+  --nftMint CYh9fw33qfcCkd7tZwkHZ8i2CgkWKZD4XL2ahFCmH9ia \
+  --paymentMint So11111111111111111111111111111111111111112 \
+  --size 1 \
+  --price 650000

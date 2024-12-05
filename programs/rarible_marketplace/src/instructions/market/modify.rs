@@ -12,16 +12,16 @@ pub struct ModifyMarketParams {
 #[instruction()]
 #[event_cpi]
 pub struct ModifyMarket<'info> {
-    #[account(mut)]
+    #[account(mut,
+        constraint = market.initializer == initializer.key())]
     pub initializer: Signer<'info>,
     #[account()]
     /// CHECK: doesn't actually need to be a mint
     pub market_identifier: UncheckedAccount<'info>,
-    #[account(
+    #[account(mut,
         seeds = [MARKET_SEED,
         market_identifier.key().as_ref()],
         bump,
-        constraint = market.initializer == initializer.key()
     )]
     pub market: Box<Account<'info, Market>>,
     pub system_program: Program<'info, System>,
@@ -30,15 +30,11 @@ pub struct ModifyMarket<'info> {
 #[inline(always)]
 pub fn handler(ctx: Context<ModifyMarket>, params: ModifyMarketParams) -> Result<()> {
     msg!("Modify existing market");
-    let market = &mut ctx.accounts.market;
+    Market::modify_fee(
+        &mut ctx.accounts.market,
+        params.fee_recipient,
+        params.fee_bps,
+    );
 
-    market.fee_recipient = params.fee_recipient;
-    market.fee_bps = params.fee_bps;
-
-    emit_cpi!(Market::get_edit_event(
-        &mut ctx.accounts.market.clone(),
-        ctx.accounts.market.key(),
-        MarketEditType::Modify
-    ));
     Ok(())
 }

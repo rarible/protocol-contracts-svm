@@ -43,3 +43,33 @@ npx ts-node ./src/cli/createDeployment.ts \
 npx ts-node ./src/cli/addPhase.ts -d 5rPxHARWC3XVjXfFueVzUibCNKUw22hkhdjmj5BqBxEg -k ~/.config/solana/id.json -r https://testnet.dev2.eclipsenetwork.xyz --maxMintsPerWallet 100 --maxMintsTotal 1000 --priceAmount 500 -s 1709564319 -e 1991938380
 
 npx ts-node ./src/cli/mintWithControls.ts -d 5rPxHARWC3XVjXfFueVzUibCNKUw22hkhdjmj5BqBxEg -k ~/.config/solana/id.json -r https://testnet.dev2.eclipsenetwork.xyz -p 0 -n 1
+
+
+npx ts-node ./src/cli/createDeployment.ts \
+  -t GKJipHv2dn58S4fxFjdBjyGJY5KTvhY7mYAjUd2hMtFV \
+  -k ~/.config/solana/prod-keypair.json \
+  -r https://mainnetbeta-rpc.eclipse.xyz \
+  -s SECONDARYSALES \
+  --maxNumberOfTokens 0 \
+  --maxMintsPerWallet 99999 \
+  -u "https://ipfs.raribleuserdata.com/ipfs/QmXTfspj4ebkVUW6jTF8cfyrQUip4xs5PehKK2qMaCBJgX" \
+  -n "Secondary Sales" \
+  --creators GKJipHv2dn58S4fxFjdBjyGJY5KTvhY7mYAjUd2hMtFV:100 \
+  --royaltyBasisPoints 1000 \
+  --platformFeeValue 0 \
+  --platformFeeRecipients GKJipHv2dn58S4fxFjdBjyGJY5KTvhY7mYAjUd2hMtFV:100 \
+  --isFeeFlat \
+  --itemBaseUri "https://ipfs.raribleuserdata.com/ipfs/QmaqDcqLjdhYmhp5XMy1xPLnp4vpEpnPyTA43tSby9kcjR" \
+  --itemBaseName "Secondary Sales"
+
+npx ts-node ./src/cli/addPhase.ts \
+  -d 3KY1iu4xuCqVokQNQpkXGL4Tu2PrNDjfG4DUPtjCCDfV \
+  -k ~/.config/solana/prod-keypair.json \
+  -r https://mainnetbeta-rpc.eclipse.xyz \
+  --maxMintsPerWallet 99998 \
+  --maxMintsTotal 0 \
+  --priceAmount 0 \
+  -s 1732986000 \
+  -e 1764522000
+
+npx ts-node ./src/cli/mintWithControls.ts -d 3KY1iu4xuCqVokQNQpkXGL4Tu2PrNDjfG4DUPtjCCDfV -k ~/.config/solana/prod-keypair.json -r https://mainnetbeta-rpc.eclipse.xyz -p 0 -n 1
