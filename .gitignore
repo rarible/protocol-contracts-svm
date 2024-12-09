@@ -20,3 +20,5 @@ data/**/*
 backup-keys
 metadata
 cat-meta
+
+context-programs/

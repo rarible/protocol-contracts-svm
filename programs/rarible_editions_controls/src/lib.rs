@@ -63,4 +63,8 @@ pub mod rarible_editions_controls {
     ) -> Result<()> {
         instructions::update_platform_fee_secondary_admin(ctx, input)
     }
+
+    pub fn transfer_ownership(ctx: Context<TransferOwnershipCtx>) -> Result<()> {
+        instructions::transfer_ownership::handler(ctx)
+    }
 }
