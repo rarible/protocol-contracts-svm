@@ -1814,4 +1814,128 @@ describe("Editions Controls Test Suite", () => {
       });
     });
   });
+   describe("Transferring ownership", () => {
+     let newOwner: Keypair;
+
+     before(async () => {
+       newOwner = Keypair.generate();
+       // Airdrop SOL to new owner
+       const newOwnerAirdropSignature = await provider.connection.requestAirdrop(
+         newOwner.publicKey,
+         1 * LAMPORTS_PER_SOL
+       );
+       await provider.connection.confirmTransaction(newOwnerAirdropSignature);
+     });
+
+     it("Should transfer ownership to a new owner", async () => {
+       const transferOwnershipIx = await editionsControlsProgram.methods
+         .transferOwnership()
+         .accountsStrict({
+           editionsDeployment: editionsPda,
+           editionsControls: editionsControlsPda,
+           currentOwner: payer.publicKey,
+           newOwner: newOwner.publicKey,
+         })
+         .instruction();
+
+       const transaction = new Transaction().add(transferOwnershipIx);
+
+       await provider.sendAndConfirm(transaction, [payer]);
+
+       // Verify state after ownership transfer
+       const editionsDecoded = await getEditions(provider.connection, editionsPda, editionsProgram);
+       const editionsControlsDecoded = await getEditionsControls(
+         provider.connection,
+         editionsControlsPda,
+         editionsControlsProgram
+       );
+
+       if (VERBOSE_LOGGING) {
+         logEditions(editionsDecoded);
+         logEditionsControls(editionsControlsDecoded);
+       }
+
+       // Verify that ownership was transferred in both programs
+       expect(editionsDecoded.data.creator.toBase58()).to.equal(editionsControlsPda.toBase58());
+       expect(editionsControlsDecoded.data.creator.toBase58()).to.equal(
+         newOwner.publicKey.toBase58()
+       );
+     });
+
+     it("Should not allow the old owner to perform admin actions", async () => {
+       // Try to add a phase with the old owner
+       const phaseConfig = {
+         maxMintsPerWallet: new anchor.BN(100),
+         maxMintsTotal: new anchor.BN(1000),
+         priceAmount: new anchor.BN(500000),
+         startTime: new anchor.BN(new Date().getTime() / 1000),
+         endTime: new anchor.BN(new Date().getTime() / 1000 + 60 * 60 * 24),
+         priceToken: new PublicKey("So11111111111111111111111111111111111111112"),
+         isPrivate: false,
+         merkleRoot: null,
+       };
+
+       const phaseIx = await editionsControlsProgram.methods
+         .addPhase(phaseConfig)
+         .accountsStrict({
+           editionsControls: editionsControlsPda,
+           creator: payer.publicKey,
+           payer: payer.publicKey,
+           systemProgram: SystemProgram.programId,
+           tokenProgram: TOKEN_2022_PROGRAM_ID,
+           raribleEditionsProgram: editionsProgram.programId,
+         })
+         .instruction();
+
+       const transaction = new Transaction().add(phaseIx);
+
+       try {
+         await provider.sendAndConfirm(transaction, [payer]);
+         throw new Error("Transaction should have failed");
+       } catch (error) {
+         const errorString = JSON.stringify(error);
+         // Verify that the error is due to invalid creator
+         expect(errorString).to.include("A raw constraint was violated.");
+       }
+     });
+
+     it("Should allow the new owner to perform admin actions", async () => {
+       // Try to add a phase with the new owner
+       const phaseConfig = {
+         maxMintsPerWallet: new anchor.BN(100),
+         maxMintsTotal: new anchor.BN(1000),
+         priceAmount: new anchor.BN(500000),
+         startTime: new anchor.BN(new Date().getTime() / 1000),
+         endTime: new anchor.BN(new Date().getTime() / 1000 + 60 * 60 * 24),
+         priceToken: new PublicKey("So11111111111111111111111111111111111111112"),
+         isPrivate: false,
+         merkleRoot: null,
+       };
+
+       const phaseIx = await editionsControlsProgram.methods
+         .addPhase(phaseConfig)
+         .accountsStrict({
+           editionsControls: editionsControlsPda,
+           creator: newOwner.publicKey,
+           payer: newOwner.publicKey,
+           systemProgram: SystemProgram.programId,
+           tokenProgram: TOKEN_2022_PROGRAM_ID,
+           raribleEditionsProgram: editionsProgram.programId,
+         })
+         .instruction();
+
+       const transaction = new Transaction().add(phaseIx);
+
+       await provider.sendAndConfirm(transaction, [newOwner]);
+
+       // Verify that the phase was added
+       const editionsControlsDecoded = await getEditionsControls(
+         provider.connection,
+         editionsControlsPda,
+         editionsControlsProgram
+       );
+
+       expect(editionsControlsDecoded.data.phases.length).to.equal(7); // Previous 6 phases + 1 new phase
+     });
+   });
 });

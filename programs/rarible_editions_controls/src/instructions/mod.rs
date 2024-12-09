@@ -18,3 +18,6 @@ pub use update_platform_fee::*;
 
 pub mod update_platform_fee_secondary_admin;
 pub use update_platform_fee_secondary_admin::*;
+
+pub mod transfer_ownership;
+pub use transfer_ownership::*;
