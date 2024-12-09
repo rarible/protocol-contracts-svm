@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anchor_lang::{prelude::*, solana_program::sysvar};
+use anchor_lang::{prelude::*, solana_program::sysvar, system_program};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token_2022::spl_token_2022::instruction::transfer_checked as transfer_2022,
@@ -83,29 +83,43 @@ pub struct FillOrder<'info> {
 impl<'info> FillOrder<'info> {
     #[inline(never)]
     fn transfer_payment(&self, signer_seeds: &[&[&[u8]]], is_buy: bool, amount: u64) -> Result<()> {
-        let cpi_ctx = if is_buy {
-            CpiContext::new_with_signer(
-                self.payment_token_program.to_account_info(),
-                TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: self.seller_payment_ta.to_account_info(),
-                    authority: self.order.to_account_info(),
-                    mint: self.payment_mint.to_account_info(),
-                },
-                signer_seeds,
-            )
+        if self.payment_mint.key() == WSOL_MINT && !is_buy {
+            system_program::transfer(
+                CpiContext::new(
+                    self.system_program.to_account_info(),
+                    system_program::Transfer {
+                        from: self.taker.to_account_info(),
+                        to: self.maker.to_account_info(),
+                    },
+                ),
+                amount,
+            )?;
+            Ok(())
         } else {
-            CpiContext::new(
-                self.payment_token_program.to_account_info(),
-                TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: self.seller_payment_ta.to_account_info(),
-                    authority: self.taker.to_account_info(),
-                    mint: self.payment_mint.to_account_info(),
-                },
-            )
-        };
-        transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+            let cpi_ctx = if is_buy {
+                CpiContext::new_with_signer(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.seller_payment_ta.to_account_info(),
+                        authority: self.order.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                    signer_seeds,
+                )
+            } else {
+                CpiContext::new(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.seller_payment_ta.to_account_info(),
+                        authority: self.taker.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                )
+            };
+            transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
+        }
     }
 
     /*
@@ -236,85 +250,52 @@ impl<'info> FillOrder<'info> {
     }
 
     #[inline(never)]
-    fn transfer_fee(
-        &self,
-        signer_seeds: &[&[&[u8]]],
-        fee_accounts: Vec<AccountInfo<'info>>,
-        is_buy: bool,
-        fee_amounts: Vec<u64>,
-    ) -> Result<()> {
-        let authority = if is_buy {
-            self.order.to_account_info()
-        } else {
-            self.taker.to_account_info()
-        };
-
-        let mut i = 0;
-        for accounts in fee_accounts.chunks(2) {
-            let amount = fee_amounts[i];
-            i = i + 1;
-            if accounts.len() == 2 {
-                // Valid account pair
-                let rec_pubkey = &accounts[0];
-                if rec_pubkey.key().to_string() == Pubkey::default().to_string() {
-                    continue;
-                }
-                let rec_ta = &accounts[1];
-                create_ata(
-                    &rec_ta.to_account_info(),
-                    &self.taker.to_account_info(),
-                    &self.payment_mint.to_account_info(),
-                    &rec_pubkey.to_account_info(),
-                    &self.system_program.to_account_info(),
-                    &self.payment_token_program.to_account_info(),
-                )?;
-                let ctx = TransferChecked {
-                    from: self.buyer_payment_ta.to_account_info(),
-                    to: rec_ta.to_account_info(),
-                    authority: authority.clone(),
-                    mint: self.payment_mint.to_account_info(),
-                };
-                let cpi = if is_buy {
-                    CpiContext::new_with_signer(
-                        self.payment_token_program.to_account_info(),
-                        ctx,
-                        signer_seeds,
-                    )
-                } else {
-                    CpiContext::new(self.payment_token_program.to_account_info(), ctx)
-                };
-                transfer_checked(cpi, amount, self.payment_mint.decimals)?;
-            }
-        }
-
-        Ok(())
-    }
-
-    #[inline(never)]
-    fn wrap_sol_if_needed(&self, amount: u64, is_buy: bool) -> Result<()> {
+    fn transfer_fee(&self, signer_seeds: &[&[&[u8]]], is_buy: bool, amount: u64) -> Result<()> {
         if self.payment_mint.key() == WSOL_MINT && !is_buy {
-            invoke_wrap_sol(
-                &WrapSolAccounts {
-                    user: self.taker.to_account_info(),
-                    user_ta: self.buyer_payment_ta.to_account_info(),
-                    token_program: self.payment_token_program.to_account_info(),
-                    wsol_mint: self.payment_mint.to_account_info(),
-                    system_program: self.system_program.to_account_info(),
-                },
+            system_program::transfer(
+                CpiContext::new(
+                    self.system_program.to_account_info(),
+                    system_program::Transfer {
+                        from: self.taker.to_account_info(),
+                        to: self.fee_recipient.to_account_info(),
+                    },
+                ),
                 amount,
             )?;
+            Ok(())
+        } else {
+            let cpi_ctx = if is_buy {
+                CpiContext::new_with_signer(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.fee_recipient_ta.to_account_info(),
+                        authority: self.order.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                    signer_seeds,
+                )
+            } else {
+                CpiContext::new(
+                    self.payment_token_program.to_account_info(),
+                    TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: self.fee_recipient_ta.to_account_info(),
+                        authority: self.taker.to_account_info(),
+                        mint: self.payment_mint.to_account_info(),
+                    },
+                )
+            };
+            transfer_checked(cpi_ctx, amount, self.payment_mint.decimals)
         }
-        Ok(())
+        
     }
 
     #[inline(never)]
     fn unwrap_sol_if_needed(&self, is_buy: bool) -> Result<()> {
-        if self.payment_mint.key() == WSOL_MINT {
-            let user_ta = if is_buy {
-                self.seller_payment_ta.to_account_info()
-            } else {
-                self.buyer_payment_ta.to_account_info()
-            };
+        if self.payment_mint.key() == WSOL_MINT && is_buy {
+            let user_ta = self.seller_payment_ta.to_account_info();
+            
             invoke_unwrap_sol(&UnwrapSolAccounts {
                 user: self.taker.to_account_info(),
                 user_ta,
@@ -323,6 +304,95 @@ impl<'info> FillOrder<'info> {
         }
         Ok(())
     }
+
+    #[inline(never)]
+    fn transfer_royalties(
+        &self,
+        signer_seeds: &[&[&[u8]]],
+        is_buy: bool,
+        royalties_accounts: Vec<AccountInfo<'info>>,
+        royalty_amounts: Vec<u64>,
+        creators_info: Vec<(Pubkey, u64)>,
+    ) -> Result<()> {
+        msg!("royalties::transfer_royalties::starting");
+
+        let authority = if is_buy {
+            self.order.to_account_info()
+        } else {
+            self.taker.to_account_info()
+        };
+
+        for (i, accounts) in royalties_accounts.chunks(2).enumerate() {
+            let amount = royalty_amounts[i];
+            msg!("royalties::transfer_royalties::transfer_to_creator[{}], amount: {}", i, amount);
+
+            if accounts.len() == 2 {
+                let rec_pubkey = &accounts[0];
+                let rec_ta = &accounts[1];
+
+                msg!("royalties::transfer_royalties::recipient_pubkey: {}", rec_pubkey.key());
+                msg!("royalties::transfer_royalties::recipient_ta: {}", rec_ta.key());
+
+                // Verify that the recipient's public key matches the creator's public key
+                if rec_pubkey.key() != creators_info[i].0 {
+                    msg!(
+                        "royalties::transfer_royalties::recipient_pubkey_mismatch, expected: {}, found: {}",
+                        creators_info[i].0,
+                        rec_pubkey.key()
+                    );
+                    return Err(MarketError::InvalidRoyaltiesAccount.into());
+                }
+                if self.payment_mint.key() == WSOL_MINT && !is_buy {
+                    system_program::transfer(
+                        CpiContext::new(
+                            self.system_program.to_account_info(),
+                            system_program::Transfer {
+                                from: self.taker.to_account_info(),
+                                to: rec_pubkey.to_account_info(),
+                            },
+                        ),
+                        amount,
+                    )?;
+                } else {
+                    create_ata(
+                        &rec_ta.to_account_info(),
+                        &self.taker.to_account_info(),
+                        &self.payment_mint.to_account_info(),
+                        &rec_pubkey.to_account_info(),
+                        &self.system_program.to_account_info(),
+                        &self.payment_token_program.to_account_info(),
+                    )?;
+    
+                    let ctx = TransferChecked {
+                        from: self.buyer_payment_ta.to_account_info(),
+                        to: rec_ta.to_account_info(),
+                        authority: authority.clone(),
+                        mint: self.payment_mint.to_account_info(),
+                    };
+    
+                    let cpi = if is_buy {
+                        CpiContext::new_with_signer(
+                            self.payment_token_program.to_account_info(),
+                            ctx,
+                            signer_seeds,
+                        )
+                    } else {
+                        CpiContext::new(self.payment_token_program.to_account_info(), ctx)
+                    };
+    
+                    transfer_checked(cpi, amount, self.payment_mint.decimals)?;
+                }
+
+                msg!("royalties::transfer_royalties::transfer_successful_to_creator[{}]", i);
+
+            } else {
+                msg!("royalties::transfer_royalties::not_enough_accounts_for_creator[{}], accounts_len: {}", i, accounts.len());
+            }
+        }
+
+        Ok(())
+    }
+
 }
 
 /// Initializer is the buyer and is buying an nft from the seller
@@ -371,7 +441,7 @@ pub fn handler<'info>(
         .map(|f| get_fee_amount(buy_value, f));
     let total_fee_amount: u64 = fee_amounts.iter().sum();
 
-    let mut seller_received_amount = buy_value - total_fee_amount;
+    let mut seller_received_amount = buy_value;
 
     let is_buy = ctx.accounts.order.side == 0;
     // Verify maker + taker accounts
@@ -437,7 +507,15 @@ pub fn handler<'info>(
         &payment_token_program,
     )?;
 
-    ctx.accounts.wrap_sol_if_needed(buy_value, is_buy)?;
+    let fee_reciever = ctx.accounts.fee_recipient.to_account_info();
+    create_ata(
+        &ctx.accounts.fee_recipient_ta.to_account_info(),
+        &ctx.accounts.taker.to_account_info(),
+        &ctx.accounts.payment_mint.to_account_info(),
+        &fee_reciever,
+        &system_program,
+        &payment_token_program,
+    )?;
 
     // Transfer NFT
     if *nft_token_program_key == TOKEN_PID {
@@ -488,12 +566,110 @@ pub fn handler<'info>(
                 .map(|value| u64::from_str(value).unwrap())
                 .unwrap_or(0);
 
+            msg!("royalties::handler::royalty_basis_points: {}", royalty_basis_points);
+
             let royalties = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
             seller_received_amount = seller_received_amount.checked_sub(royalties).unwrap();
 
             // Handles royalties
             ctx.accounts
                 .approve_wns_transfer(signer_seeds, buy_value, is_buy, wns_accounts)?;
+        } else {
+            let mint_metadata = get_mint_metadata(&mut ctx.accounts.nft_mint.to_account_info())?;
+            let royalty_basis_points = mint_metadata
+                .additional_metadata
+                .iter()
+                .find(|(key, _)| key == ROYALTY_BASIS_POINTS_FIELD)
+                .map(|(_, value)| value)
+                .map(|value| u64::from_str(value).unwrap())
+                .unwrap_or(0);
+
+            msg!("royalties::handler::royalty_basis_points: {}", royalty_basis_points);
+
+            let royalties_amount = get_amount_from_bp(buy_value, royalty_basis_points.into())?;
+            msg!("royalties::handler::royalties_amount: {}", royalties_amount);
+
+            if royalties_amount > 0 && remaining_accounts.len() > 1 {
+
+                msg!("royalties::handler::parsing_creators");
+
+                let creators_additional_metadata: Vec<&(String, String)> = mint_metadata
+                    .additional_metadata
+                    .iter()
+                    .filter(|(key, _)| !key.starts_with("royalty"))
+                    .collect();
+                let mut total_percentage: u64 = 0;
+                let mut creators_info: Vec<(Pubkey, u64)> = Vec::new();
+                for (key, value) in creators_additional_metadata {
+                    match Pubkey::from_str(key) {
+                        Ok(parsed_key) => {
+                            match u64::from_str(value) {
+                                Ok(percentage) => {
+                                    if percentage > 100 {
+                                        msg!("royalties::handler::percentage_over_100: {}", percentage);
+                                        return Err(MarketError::InvalidRoyaltyPercentage.into());
+                                    }
+                                    total_percentage += percentage;
+                                    if total_percentage > 100 {
+                                        msg!("royalties::handler::total_percentage_exceeded: {}", total_percentage);
+                                        return Err(MarketError::TotalRoyaltyPercentageExceeded.into());
+                                    }
+                                    msg!("royalties::handler::creator pubkey: {}, percentage: {}", parsed_key, percentage);
+                                    creators_info.push((parsed_key, percentage));
+                                }
+                                Err(_) => {
+                                    // Value is not a valid u64, skip or handle accordingly
+                                    msg!("royalties::handler::invalid_value_not_a_u64: {}", value);
+                                    return Err(MarketError::InvalidRoyaltyPercentage.into());
+                                }
+                            }
+                        }
+                        Err(_) => {
+                            // Key is not a valid Pubkey, remove it or handle accordingly
+                            msg!("royalties::handler::invalid_key_not_a_pubkey: {}", key);
+                        }
+                    }
+                }
+
+                msg!("royalties::handler::total_royalty_percentage: {}", total_percentage);
+                
+                // Check if there are enough remaining accounts for creators
+                let num_creator_accounts = creators_info.len() * 2;
+                if token22_ra.len() < num_creator_accounts {
+                    msg!(
+                        "royalties::handler::not_enough_remaining_accounts, required: {}, provided: {}",
+                        num_creator_accounts,
+                        token22_ra.len()
+                    );
+                    return Err(MarketError::NotEnoughRemainingAccounts.into());
+                }
+                
+                let (royalties_accounts, token22_ra_rest) = remaining_accounts.split_at(num_creator_accounts);
+                token22_ra = token22_ra_rest.to_vec();
+                
+                // Compute royalty amounts for each creator
+                let mut royalty_amounts: Vec<u64> = Vec::new();
+                for (_, percentage) in &creators_info {
+                    let amount = royalties_amount
+                        .checked_mul(*percentage)
+                        .unwrap()
+                        .checked_div(100)
+                        .unwrap();
+                    royalty_amounts.push(amount);
+                }
+                
+                // Adjust seller received amount
+                seller_received_amount = seller_received_amount.checked_sub(royalties_amount).unwrap();
+                
+                // Transfer royalties to creators
+                ctx.accounts.transfer_royalties(
+                    signer_seeds,
+                    is_buy,
+                    royalties_accounts.to_vec(),
+                    royalty_amounts,
+                    creators_info,
+                )?;
+            }
         }
         // Any remaining accounts left are for potential transfer hook (Empty if not expecting hook)
         ctx.accounts
@@ -507,15 +683,11 @@ pub fn handler<'info>(
         return Err(MarketError::UnsupportedNft.into());
     }
 
+    ctx.accounts
+        .transfer_fee(signer_seeds, is_buy, fee_amount)?;
     // Transfer payment
     ctx.accounts
         .transfer_payment(signer_seeds, is_buy, seller_received_amount)?;
-    ctx.accounts.transfer_fee(
-        signer_seeds,
-        fee_accounts.to_vec(),
-        is_buy,
-        fee_amounts.to_vec(),
-    )?;
 
     ctx.accounts.unwrap_sol_if_needed(is_buy)?;
 

@@ -16,7 +16,7 @@ pub struct InitMarket<'info> {
     pub initializer: Signer<'info>,
     #[account()]
     /// CHECK: doesn't actually need to be a mint
-    pub market_identifier: UncheckedAccount<'info>,
+    pub market_identifier: Signer<'info>,
     #[account(
         init,
         seeds = [MARKET_SEED,

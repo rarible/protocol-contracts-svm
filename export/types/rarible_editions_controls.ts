@@ -218,29 +218,9 @@ export type RaribleEditionsControls = {
           }
         },
         {
-          "name": "hashlist",
-          "writable": true
-        },
-        {
-          "name": "hashlistMarker",
-          "writable": true
-        },
-        {
           "name": "payer",
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "signer",
-          "docs": [
-            "When deployment.require_creator_cosign is true, this must be equal to the creator",
-            "of the deployment; otherwise, can be any signer account"
-          ],
-          "signer": true
-        },
-        {
-          "name": "minter",
-          "writable": true
         },
         {
           "name": "minterStats",
@@ -270,7 +250,7 @@ export type RaribleEditionsControls = {
               },
               {
                 "kind": "account",
-                "path": "minter"
+                "path": "payer"
               }
             ]
           }
@@ -309,7 +289,7 @@ export type RaribleEditionsControls = {
               },
               {
                 "kind": "account",
-                "path": "minter"
+                "path": "payer"
               },
               {
                 "kind": "arg",
@@ -374,6 +354,57 @@ export type RaribleEditionsControls = {
           "type": {
             "defined": {
               "name": "mintInput"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "modifyPhase",
+      "discriminator": [
+        247,
+        63,
+        190,
+        58,
+        13,
+        139,
+        79,
+        17
+      ],
+      "accounts": [
+        {
+          "name": "editionsControls",
+          "writable": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "raribleEditionsProgram",
+          "address": "Rari9ftBd6vFdtpn8TDLwN2ze24KKkM5MLEETNiBMNn"
+        }
+      ],
+      "args": [
+        {
+          "name": "input",
+          "type": {
+            "defined": {
+              "name": "modifyPhaseInput"
             }
           }
         }
@@ -1145,6 +1176,61 @@ export type RaribleEditionsControls = {
                 50
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "modifyPhaseInput",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "priceAmount",
+            "type": "u64"
+          },
+          {
+            "name": "priceToken",
+            "type": "pubkey"
+          },
+          {
+            "name": "startTime",
+            "type": "i64"
+          },
+          {
+            "name": "maxMintsPerWallet",
+            "type": "u64"
+          },
+          {
+            "name": "maxMintsTotal",
+            "type": "u64"
+          },
+          {
+            "name": "endTime",
+            "type": "i64"
+          },
+          {
+            "name": "isPrivate",
+            "type": "bool"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "merkleRoot",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "phaseIndex",
+            "type": "u32"
           }
         ]
       }

@@ -354,67 +354,6 @@
           }
         },
         {
-          "name": "hashlist",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  104,
-                  97,
-                  115,
-                  104,
-                  108,
-                  105,
-                  115,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "editions_deployment"
-              }
-            ]
-          }
-        },
-        {
-          "name": "hashlist_marker",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  104,
-                  97,
-                  115,
-                  104,
-                  108,
-                  105,
-                  115,
-                  116,
-                  95,
-                  109,
-                  97,
-                  114,
-                  107,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "editions_deployment"
-              },
-              {
-                "kind": "account",
-                "path": "mint"
-              }
-            ]
-          }
-        },
-        {
           "name": "payer",
           "writable": true,
           "signer": true
@@ -670,81 +609,128 @@
         120,
         186
       ]
-    },
-    {
-      "name": "HashlistMarker",
-      "discriminator": [
-        55,
-        46,
-        160,
-        53,
-        239,
-        41,
-        223,
-        50
-      ]
     }
   ],
   "errors": [
     {
       "code": 6000,
-      "name": "SizeExceedsMaxSize",
-      "msg": "Collection size exceeds max size."
+      "name": "NumericalOverflow",
+      "msg": "Numeric overflow"
     },
     {
       "code": 6001,
-      "name": "MaxSizeBelowCurrentSize",
-      "msg": "Max size cannot be reduced below current size."
+      "name": "DerivedKeyInvalid",
+      "msg": "Derived key invalid"
     },
     {
       "code": 6002,
-      "name": "CreatorShareInvalid",
-      "msg": "Creators shares must add up to 100."
+      "name": "MissingBump",
+      "msg": "Missing bump"
     },
     {
       "code": 6003,
-      "name": "MissingApproveAccount",
-      "msg": "Missing approve account."
+      "name": "InvalidBump",
+      "msg": "Invalid bump"
     },
     {
       "code": 6004,
-      "name": "ExpiredApproveAccount",
-      "msg": "Approve account has expired."
+      "name": "MissingMasterEditionForNft",
+      "msg": "Missing master edition for NFT"
     },
     {
       "code": 6005,
-      "name": "InvalidField",
-      "msg": "Invalid field. You cannot use a public key as a field."
+      "name": "TokenAccountNotEmpty",
+      "msg": "Token account not empty"
     },
     {
       "code": 6006,
-      "name": "CreatorAddressInvalid",
-      "msg": "The Address you provided is invalid. Please provide a valid address."
+      "name": "MissingTokenAccount",
+      "msg": "Missing token account"
     },
     {
       "code": 6007,
-      "name": "RoyaltyBasisPointsInvalid",
-      "msg": "Royalty basis points must be less than or equal to 10000."
+      "name": "MissingDestinationAccount",
+      "msg": "Missing destination account"
     },
     {
       "code": 6008,
-      "name": "PlatformFeeBasisPointsInvalid",
-      "msg": "Platform fee basis points must be less than or equal to 10000."
+      "name": "BadTreasury",
+      "msg": "Bad treasury"
     },
     {
       "code": 6009,
-      "name": "RecipientShareInvalid",
-      "msg": "Recipient shares must add up to 100."
+      "name": "BadOwner",
+      "msg": "Bad owner"
     },
     {
       "code": 6010,
-      "name": "ReservedField",
-      "msg": "The provided field is invalid or reserved."
+      "name": "BadMint",
+      "msg": "Bad mint"
     },
     {
       "code": 6011,
-      "name": "InvalidNumberOfRecipients",
-      "msg": "Invalid number of platform fee recipients. Exactly 5 recipients are required."
+      "name": "BadTokenAccountMint",
+      "msg": "Bad mint on token account"
+    },
+    {
+      "code": 6012,
+      "name": "BadTokenAccountOwner",
+      "msg": "Bad owner of token account"
+    },
+    {
+      "code": 6013,
+      "name": "BadTokenAccount",
+      "msg": "Bad token account"
+    },
+    {
+      "code": 6014,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidTokenAccount",
+      "msg": "Invalid token account"
+    },
+    {
+      "code": 6016,
+      "name": "InstructionBuildError",
+      "msg": "Instruction build error"
+    },
+    {
+      "code": 6017,
+      "name": "UnexpectedTokenType",
+      "msg": "Unexpected token type"
+    },
+    {
+      "code": 6018,
+      "name": "CannotTransferMultiplePnfts",
+      "msg": "When transferring a pNFT, the amount must be 1"
+    },
+    {
+      "code": 6019,
+      "name": "NativeSolAuthSeedsNotSpecified",
+      "msg": "Must transfer auth seeds for native sol"
+    },
+    {
+      "code": 6020,
+      "name": "MissingTokenRecord",
+      "msg": "Missing token record"
+    },
+    {
+      "code": 6021,
+      "name": "InstructionBuilderFailed",
+      "msg": "Instruction builder failed"
+    },
+    {
+      "code": 6022,
+      "name": "SplConversionNotAllowed",
+      "msg": "Spl conversion not allowed"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidCreatorCosigner",
+      "msg": "This deployment requires the creator to co-sign"
     }
   ],
   "types": [
@@ -859,22 +845,6 @@
                 }
               }
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "HashlistMarker",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "editions_deployment",
-            "type": "pubkey"
-          },
-          {
-            "name": "mint",
-            "type": "pubkey"
           }
         ]
       }

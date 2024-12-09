@@ -29,6 +29,7 @@ pub struct ListNft<'info> {
         bump,
     )]
     pub market: Box<Account<'info, Market>>,
+
     #[account(
         constraint = data.price > 0,
         constraint = data.size > 0,

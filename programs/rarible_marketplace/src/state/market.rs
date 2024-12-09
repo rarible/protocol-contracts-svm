@@ -38,6 +38,7 @@ pub enum MarketState {
 #[repr(u8)]
 pub enum MarketEditType {
     Init,
+    Modify,
 }
 
 #[account()]
@@ -82,6 +83,15 @@ impl Market {
         self.initializer = initializer;
         self.state = MarketState::Open.into();
         self.fee_recipients = fee_recipients;
+        self.fee_bps = fee_bps;
+    }
+
+    pub fn modify_fee(
+        &mut self,
+        fee_recipient: Pubkey,
+        fee_bps: u64,
+    ) {
+        self.fee_recipient = fee_recipient;
         self.fee_bps = fee_bps;
     }
 
