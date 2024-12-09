@@ -22,6 +22,7 @@ cli
   .requiredOption("--phaseIndex <phaseIndex>", "Phase index, can be 0")
   .option("-m, --merkleRootPath <merkleRootPath>", "Path to JSON file containing merkle root")
   .option("-p, --isPrivate <isPrivate>", "If true, the phase will be allow-list only")
+  .option("--active <active>", "PActive0")
   .option("--ledger", "if you want to use ledger pass true")
   .parse(process.argv);
 

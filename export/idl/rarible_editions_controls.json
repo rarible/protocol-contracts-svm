@@ -212,29 +212,9 @@
           }
         },
         {
-          "name": "hashlist",
-          "writable": true
-        },
-        {
-          "name": "hashlist_marker",
-          "writable": true
-        },
-        {
           "name": "payer",
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "signer",
-          "docs": [
-            "When deployment.require_creator_cosign is true, this must be equal to the creator",
-            "of the deployment; otherwise, can be any signer account"
-          ],
-          "signer": true
-        },
-        {
-          "name": "minter",
-          "writable": true
         },
         {
           "name": "minter_stats",
@@ -264,7 +244,7 @@
               },
               {
                 "kind": "account",
-                "path": "minter"
+                "path": "payer"
               }
             ]
           }
@@ -303,7 +283,7 @@
               },
               {
                 "kind": "account",
-                "path": "minter"
+                "path": "payer"
               },
               {
                 "kind": "arg",
@@ -368,6 +348,57 @@
           "type": {
             "defined": {
               "name": "MintInput"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "modify_phase",
+      "discriminator": [
+        247,
+        63,
+        190,
+        58,
+        13,
+        139,
+        79,
+        17
+      ],
+      "accounts": [
+        {
+          "name": "editions_controls",
+          "writable": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "rarible_editions_program",
+          "address": "Rari9ftBd6vFdtpn8TDLwN2ze24KKkM5MLEETNiBMNn"
+        }
+      ],
+      "args": [
+        {
+          "name": "input",
+          "type": {
+            "defined": {
+              "name": "ModifyPhaseInput"
             }
           }
         }
@@ -1139,6 +1170,61 @@
                 50
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ModifyPhaseInput",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price_amount",
+            "type": "u64"
+          },
+          {
+            "name": "price_token",
+            "type": "pubkey"
+          },
+          {
+            "name": "start_time",
+            "type": "i64"
+          },
+          {
+            "name": "max_mints_per_wallet",
+            "type": "u64"
+          },
+          {
+            "name": "max_mints_total",
+            "type": "u64"
+          },
+          {
+            "name": "end_time",
+            "type": "i64"
+          },
+          {
+            "name": "is_private",
+            "type": "bool"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "merkle_root",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "phase_index",
+            "type": "u32"
           }
         ]
       }
