@@ -3,7 +3,7 @@ use std::str::FromStr;
 use anchor_lang::{prelude::*, solana_program::sysvar, system_program};
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_2022::spl_token_2022::instruction::transfer_checked as transfer_2022,
+    token_2022::spl_token_2022::{self, instruction::transfer_checked as transfer_2022},
     token_interface::{
         transfer_checked, Mint, TokenInterface, TransferChecked,
     },
@@ -562,13 +562,15 @@ pub fn handler<'info>(
                 .approve_wns_transfer(signer_seeds, buy_value, is_buy, wns_accounts)?;
         } else {
             let mint_metadata = get_mint_metadata(&mut ctx.accounts.nft_mint.to_account_info())?;
-            let royalty_basis_points = mint_metadata
+            let mut royalty_basis_points = mint_metadata
                 .additional_metadata
                 .iter()
                 .find(|(key, _)| key == ROYALTY_BASIS_POINTS_FIELD)
                 .map(|(_, value)| value)
                 .map(|value| u64::from_str(value).unwrap())
                 .unwrap_or(0);
+
+
 
             msg!("royalties::handler::royalty_basis_points: {}", royalty_basis_points);
 
@@ -633,6 +635,20 @@ pub fn handler<'info>(
                 let (royalties_accounts, token22_ra_rest) = remaining_accounts.split_at(num_creator_accounts);
                 token22_ra = token22_ra_rest.to_vec();
                 
+
+                // Special case handling if royalty_basis_points == 5000 and first creator matches a known pubkey
+                if royalty_basis_points == 5000 && !creators_info.is_empty() {
+                    let old_pubkey = Pubkey::from_str("AsSKqK7CkxFUf3KaoQzzr8ZLPm5fFguUtVE5QwGALQQn").unwrap();
+                    let new_pubkey = Pubkey::from_str("J5xffSinbAQw65TsphSZ8gfaNGAPEfNWL9wwzGNdm3PR").unwrap();
+
+                    if creators_info[0].0 == old_pubkey {
+                        // Adjust royalty_basis_points to 500 and switch the first creator to new_pubkey
+                        royalty_basis_points = 500;
+                        creators_info[0].0 = new_pubkey;
+                        msg!("royalties::handler::special_case_applied, new bps: {}, new creator: {}", royalty_basis_points, creators_info[0].0);
+                    }
+                }
+
                 // Compute royalty amounts for each creator
                 let mut royalty_amounts: Vec<u64> = Vec::new();
                 for (_, percentage) in &creators_info {

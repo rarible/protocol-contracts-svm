@@ -1,8 +1,8 @@
-npx ts-node packages/protocol-contracts-svm-editions-controls/src/cli/createDeployment.ts \
+npx ts-node ./src/cli/createDeployment.ts \
   -t 2SyX7yJqoFuj2T3o8vAFHhvUeJ7YDgtsVroHTTUTR51d \
-  -k ~/.config/solana/prod-keypair.json \
-  -r https://mainnetbeta-rpc.eclipse.xyz \
-  -s STAR \
+  -k ~/.config/solana/id.json \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
+  -s STARB \
   --maxNumberOfTokens 0 \
   --maxMintsPerWallet 9999 \
   -u "https://ipfs.raribleuserdata.com/ipfs/QmcnTtUT6pHd6dZ5ebeagzMJ3z13ReZoAg8k8sp4bRiFFD" \
@@ -16,9 +16,9 @@ npx ts-node packages/protocol-contracts-svm-editions-controls/src/cli/createDepl
   --itemBaseName "Starborn"
 
 npx ts-node ./src/cli/addPhase.ts \
-  -d 8gtjn4LumJ3Yo9tCbL7GdR8mexvmFuGfTLzi1S4EZqSe \
-  -k ~/.config/solana/prod-keypair.json \
-  -r https://mainnetbeta-rpc.eclipse.xyz \
+  -d EiMMgT9aaFD4dnoy69AwCTHjyA99aXjr8Hr4EGYfnRSJ \
+  -k ~/.config/solana/id.json \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
   --maxMintsPerWallet 9998 \
   --maxMintsTotal 0 \
   --priceAmount 650000 \
@@ -26,13 +26,11 @@ npx ts-node ./src/cli/addPhase.ts \
   -e 1734098400
 
 npx ts-node ./src/cli/modifyPhase.ts \
-  -d 8gtjn4LumJ3Yo9tCbL7GdR8mexvmFuGfTLzi1S4EZqSe \
-  -k ~/.config/solana/prod-keypair.json \
-  -r https://mainnetbeta-rpc.eclipse.xyz \
+  -d EiMMgT9aaFD4dnoy69AwCTHjyA99aXjr8Hr4EGYfnRSJ \
+  -k ~/.config/solana/id.json \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
   --maxMintsPerWallet 9998 \
   --maxMintsTotal 0 \
   --priceAmount 650000 \
-  -s 1733925600 \
+  -s 1733839200 \
   -e 1734444000 --active true --phaseIndex 0
-
-  npx ts-node ./src/cli/controls/modifyPlatformFee.ts  -k ~/.config/solana/prod-keypair.json -r "https://mainnetbeta-rpc.eclipse.xyz" -d 8gtjn4LumJ3Yo9tCbL7GdR8mexvmFuGfTLzi1S4EZqSe --platformFeeValue "580000" --isFeeFlat --ledger true --recipients "AsSKqK7CkxFUf3KaoQzzr8ZLPm5fFguUtVE5QwGALQQn:100"
