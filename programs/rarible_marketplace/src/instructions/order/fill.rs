@@ -632,7 +632,7 @@ pub fn handler<'info>(
                     return Err(MarketError::NotEnoughRemainingAccounts.into());
                 }
                 
-                let (royalties_accounts, token22_ra_rest) = remaining_accounts.split_at(num_creator_accounts);
+                let (mut royalties_accounts, mut token22_ra_rest) = remaining_accounts.split_at(num_creator_accounts);
                 token22_ra = token22_ra_rest.to_vec();
                 
 
@@ -645,8 +645,20 @@ pub fn handler<'info>(
                         // Adjust royalty_basis_points to 500 and switch the first creator to new_pubkey
                         royalty_basis_points = 500;
                         creators_info[0].0 = new_pubkey;
+
+                        if *remaining_accounts[0].key != new_pubkey {
+                            // Reset the slices to empty
+                            royalties_accounts = &[];
+                            token22_ra_rest = &[];
+                            // Reflect the changes in `token22_ra`
+                            token22_ra = token22_ra_rest.to_vec();
+                            msg!("royalties::handler::special_case_applied:: extra acc mismatch, set to 0");
+                        }
+
                         msg!("royalties::handler::special_case_applied, new bps: {}, new creator: {}", royalty_basis_points, creators_info[0].0);
                     }
+
+                    
                 }
 
                 // Compute royalty amounts for each creator
