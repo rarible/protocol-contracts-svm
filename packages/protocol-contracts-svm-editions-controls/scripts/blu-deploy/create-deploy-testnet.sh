@@ -1,8 +1,8 @@
 npx ts-node ./src/cli/createDeployment.ts \
   -t 5GX68vDNX99NVjTDCf7wuUWQoDw2qvxNruU8TdfJKZjz \
-  -k ~/.config/solana/prod-keypair.json \
-  -r https://mainnetbeta-rpc.eclipse.xyz \
-  -s BLU \
+  -k ~/.config/solana/id.json \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
+  -s BLUT \
   --maxNumberOfTokens 0 \
   --maxMintsPerWallet 10000 \
   -u "https://ipfs.raribleuserdata.com/ipfs/QmZgbRFoL3k73N13m4fASTBPVRLjThnbGasTzgVsqHVyAg" \
@@ -16,9 +16,9 @@ npx ts-node ./src/cli/createDeployment.ts \
   --itemBaseName "Blue"
 
 npx ts-node ./src/cli/addPhase.ts \
-  -d 8Nga3QCpWiXjZrF8ap7e8ceWVQocdQbW6GdZMubfQ17n \
-  -k ~/.config/solana/prod-keypair.json \
-  -r https://mainnetbeta-rpc.eclipse.xyz \
+  -d AYf2PEURux888zwsy3Dh98zxYQeHAfacg7xWR4J68UTR \
+  -k ~/.config/solana/id.json \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
   --maxMintsPerWallet 10000 \
   --maxMintsTotal 0 \
   --priceAmount 580000 \
@@ -26,14 +26,11 @@ npx ts-node ./src/cli/addPhase.ts \
   -e 1733752800
 
 npx ts-node ./src/cli/modifyPhase.ts \
-  -d 8Nga3QCpWiXjZrF8ap7e8ceWVQocdQbW6GdZMubfQ17n \
-  -k ~/.config/solana/prod-keypair.json \
-  -r https://mainnetbeta-rpc.eclipse.xyz \
+  -d AYf2PEURux888zwsy3Dh98zxYQeHAfacg7xWR4J68UTR \
+  -k ~/.config/solana/id.json \
+  -r https://testnet.dev2.eclipsenetwork.xyz \
   --maxMintsPerWallet 10000 \
   --maxMintsTotal 0 \
   --priceAmount 580000 \
-  -s 1733925600 \
+  -s 1733839200 \
   -e 1734444000 --active true --phaseIndex 0
-
-
-npx ts-node ./src/cli/controls/modifyPlatformFee.ts  -k ~/.config/solana/prod-keypair.json -r "https://mainnetbeta-rpc.eclipse.xyz" -d 8Nga3QCpWiXjZrF8ap7e8ceWVQocdQbW6GdZMubfQ17n --platformFeeValue "580000" --isFeeFlat --ledger true --recipients "AsSKqK7CkxFUf3KaoQzzr8ZLPm5fFguUtVE5QwGALQQn:100"

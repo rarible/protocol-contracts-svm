@@ -31,6 +31,8 @@ npx ts-node ./src/cli/modifyPhase.ts \
   -r https://mainnetbeta-rpc.eclipse.xyz \
   --maxMintsPerWallet 9998 \
   --maxMintsTotal 0 \
-  --priceAmount 650000 \
-  -s 3733493600 \
-  -e 4734098400 --phaseIndex 0 --active false
+  --priceAmount 580000 \
+  -s 1733925600 \
+  -e 1734444000 --active true --phaseIndex 0
+
+npx ts-node ./src/cli/controls/modifyPlatformFee.ts  -k ~/.config/solana/prod-keypair.json -r "https://mainnetbeta-rpc.eclipse.xyz" -d 8gtjn4LumJ3Yo9tCbL7GdR8mexvmFuGfTLzi1S4EZqSe --platformFeeValue "580000" --isFeeFlat --ledger true --recipients "AsSKqK7CkxFUf3KaoQzzr8ZLPm5fFguUtVE5QwGALQQn:100"
